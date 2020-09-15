@@ -10,11 +10,13 @@ export class UsersService {
   private users: User[] = [];
 
   public createUser(user: CreateUserDto) {
+    const userId = uuidv4();
     const newUser: User = {
       ...user,
-      id: uuidv4(),
+      id: userId,
     };
     this.users.push(newUser);
+    return userId;
   }
 
   public getAllUsers() {
