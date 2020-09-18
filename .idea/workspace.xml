@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="bc2356da-f3fc-4c8e-b8fc-b7f90369b618" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/bin/frontend/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/main.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/main.js.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/polyfills.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/polyfills.js.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/runtime.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/runtime.js.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/scripts.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/scripts.js.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/styles.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/styles.js.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/vendor.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/vendor.js.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/verottaa.exe" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/verottaa_386" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/verottaa_amd64" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/users.go" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/users.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/databaser/databaser.go" beforeDir="false" afterPath="$PROJECT_DIR$/databaser/databaser.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go Application" />
+        <option value="Go File" />
+      </list>
+    </option>
+  </component>
+  <component name="GOROOT" path="C:\Go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1hYfTX0fIEs0aiJiADJIekiq2jR" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="DefaultGoTemplateProperty" value="Go File" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="configurable.Global.GOPATH.is.expanded" value="true" />
+    <property name="configurable.Module.GOPATH.is.expanded" value="false" />
+    <property name="configurable.Project.GOPATH.is.expanded" value="true" />
+    <property name="go.import.settings.migrated" value="true" />
+    <property name="go.sdk.automatically.set" value="true" />
+    <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+    <property name="ts.external.directory.path" value="C:\Program Files\JetBrains\GoLand 2020.2.2\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+  <component name="VgoProject">
+    <integration-enabled>true</integration-enabled>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="752" y="183" key="#GOPATH" timestamp="1600249163029">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state x="752" y="183" key="#GOPATH/0.0.1920.1050@0.0.1920.1050" timestamp="1600249163029" />
+    <state x="752" y="358" key="#Go_Modules" timestamp="1600193365778">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state x="752" y="358" key="#Go_Modules/0.0.1920.1050@0.0.1920.1050" timestamp="1600193365778" />
+    <state x="461" y="169" key="SettingsEditor" timestamp="1600249891230">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state x="461" y="169" key="SettingsEditor/0.0.1920.1050@0.0.1920.1050" timestamp="1600249891230" />
+  </component>
+</project>
