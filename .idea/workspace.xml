@@ -20,16 +20,28 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bc2356da-f3fc-4c8e-b8fc-b7f90369b618" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/backend.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/controllers/users.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/databaser/databaser.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/models.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/utils.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/variables/constants.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/variables/variables.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/main.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/main.js.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/polyfills.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/polyfills.js.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/runtime.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/runtime.js.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/scripts.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/scripts.js.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/styles.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/styles.js.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/vendor.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/frontend/vendor.js.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/verottaa.exe" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/verottaa_386" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/verottaa_amd64" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/users.go" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/users.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/databaser/databaser.go" beforeDir="false" afterPath="$PROJECT_DIR$/databaser/databaser.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,6 +69,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="DefaultGoTemplateProperty" value="Go File" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
@@ -87,6 +100,9 @@
       </map>
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

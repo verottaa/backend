@@ -1,8 +1,8 @@
-module main
+module verottaa
 
 go 1.14
 
 require (
-	github.com/gorilla/mux v1.8.0 // indirect
-	go.mongodb.org/mongo-driver v1.4.1 // indirect
+	github.com/gorilla/mux v1.8.0
+	go.mongodb.org/mongo-driver v1.4.1
 )

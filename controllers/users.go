@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"main/databaser"
-	"main/models"
 	"net/http"
+	"verottaa/databaser"
+	"verottaa/models"
 )
 
 func UserRouter(router *mux.Router) {
@@ -72,5 +72,12 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteUser(w http.ResponseWriter, r *http.Request) {
-	
+	w.Header().Set("Content-Type", "application/json")
+	vars := mux.Vars(r)
+	id, _ := primitive.ObjectIDFromHex(vars["id"])
+	if err := databaser.User.DeleteById(id); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	} else {
+		w.WriteHeader(http.StatusOK)
+	}
 }

@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"log"
-	"main/controllers"
-	"main/variables"
 	"net/http"
 	"os"
 	"os/signal"
 	"path"
 	"time"
+	"verottaa/controllers"
+	"verottaa/variables"
 )
 
 func main() {
