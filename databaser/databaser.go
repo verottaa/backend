@@ -1,91 +1,121 @@
 package databaser
 
 import (
-	"go.mongodb.org/mongo-driver/bson"
+	"context"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
+	"sync"
+	"verottaa/config"
+	"verottaa/constants"
+	"verottaa/databaser/users"
 	"verottaa/models"
-	"verottaa/variables"
 )
 
-type UserCollection struct {
-	collection *mongo.Collection
+var configuration = config.GetConfiguration()
+
+type databaser struct {
+	client          *mongo.Client
+	userCollection_ users.UserCollection
 }
 
-var User = new(UserCollection)
-
-func (c *UserCollection) Init() {
-	c.collection = variables.Client.Database(variables.DATABASE_NAME).Collection(variables.USERS_COLLECTION)
+type DB interface {
+	models.Destroyable
+	UserCollection
 }
 
-func (c *UserCollection) Create(user models.User) error {
-	_, err := c.collection.InsertOne(variables.Ctx, user)
-	return err
+type UserCollection interface {
+	CreateUser(user models.User) (interface{}, error)
+	ReadAllUsers() ([]models.User, error)
+	ReadUserById(id primitive.ObjectID) (models.User, error)
+	UpdateUser(id primitive.ObjectID, user models.User) error
+	DeleteUserById(id primitive.ObjectID) error
+	DeleteAllUsers() error
 }
 
-func (c *UserCollection) Read() ([]models.User, error) {
-	var users []models.User
+var destroyCh = make(chan bool)
 
-	cursor, err := c.collection.Find(variables.Ctx, bson.D{})
+var instance *databaser
+var once sync.Once
+
+func initDatabaser() *databaser {
+	db := new(databaser)
+
+	var err error
+	db.client, err = mongo.NewClient(options.Client().ApplyURI(configuration.GetDatabaseHost()))
 	if err != nil {
-		return users, err
+		fmt.Println("[ERROR]: ", err)
 	}
 
-	for cursor.Next(variables.Ctx) {
-		var user models.User
-		err := cursor.Decode(&user)
-		if err != nil {
-			return users, err
-		}
+	db.userCollection_ = users.GetUserCollection(database)
 
-		users = append(users, user)
-	}
-
-	if err := cursor.Err(); err != nil {
-		return users, nil
-	}
-
-	err = cursor.Close(variables.Ctx)
-
-	return users, err
+	return db
 }
 
-func (c *UserCollection) ReadById(id primitive.ObjectID) (models.User, error) {
-	var filter = bson.D{primitive.E{Key: "_id", Value: id}}
-	var user models.User
-
-	err := c.collection.FindOne(variables.Ctx, filter).Decode(&user)
+func database(ctx context.Context) *mongo.Database {
+	err := instance.client.Connect(ctx)
 	if err != nil {
-		return user, err
+		fmt.Println("[ERROR]: ", err)
 	}
 
-	return user, err
-}
-
-func (c *UserCollection) Update(id primitive.ObjectID, user models.User) error {
-	filter := bson.D{{"_id", id}}
-	update := bson.D{
-		{"$set", bson.D{
-			{"firstName", user.FirstName},
-			{"secondName", user.SecondName},
-			{"patronymic", user.Patronymic},
-			{"type", user.Type},
-			{"branch", user.Branch},
-			{"department", user.Department},
-		}},
+	err = instance.client.Ping(ctx, nil)
+	if err != nil {
+		log.Fatal(err)
 	}
-
-	_, err := c.collection.UpdateOne(variables.Ctx, filter, update)
-	return err
+	return instance.client.Database(constants.DATABASE_NAME)
 }
 
-func (c *UserCollection) DeleteById(id primitive.ObjectID) error {
-	filter := bson.D{primitive.E{Key: "_id", Value: id}}
-	_, err := c.collection.DeleteOne(variables.Ctx, filter)
-	return err
+func GetDatabaser() DB {
+	once.Do(func() {
+		instance = initDatabaser()
+
+		go func() {
+			for
+			{
+				select {
+				case <-destroyCh:
+					return
+				}
+			}
+		}()
+	})
+
+	return instance
 }
 
-func (c *UserCollection) Delete() error {
-	_, err := c.collection.DeleteMany(variables.Ctx, bson.D{})
-	return err
+func (d databaser) Destroy() {
+	destroyCh <- true
+	close(destroyCh)
+	instance.userCollection().Destroy()
+	instance = nil
+}
+
+func (d databaser) userCollection() users.UserCollection {
+	return d.userCollection_
+}
+
+func (d databaser) CreateUser(user models.User) (interface{}, error) {
+	return d.userCollection().Create(user)
+}
+
+func (d databaser) ReadAllUsers() ([]models.User, error) {
+	return d.userCollection().ReadAll()
+}
+
+func (d databaser) ReadUserById(id primitive.ObjectID) (models.User, error) {
+	return d.userCollection().ReadById(id)
+}
+
+func (d databaser) UpdateUser(id primitive.ObjectID, user models.User) error {
+	return d.userCollection().Update(id, user)
+}
+
+func (d databaser) DeleteUserById(id primitive.ObjectID) error {
+	return d.userCollection().DeleteById(id)
+}
+
+func (d databaser) DeleteAllUsers() error {
+	return d.userCollection().DeleteAll()
 }

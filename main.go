@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -10,15 +11,18 @@ import (
 	"os/signal"
 	"path"
 	"time"
+	"verottaa/config"
+	"verottaa/constants"
 	"verottaa/controllers"
-	"verottaa/variables"
 )
 
 func main() {
+	configuration := config.GetConfiguration()
+
 	stopChan := make(chan os.Signal)
 	signal.Notify(stopChan, os.Interrupt)
 
-	api := mux.NewRouter().PathPrefix(variables.ROOT_ROUTE).Subrouter()
+	api := mux.NewRouter().PathPrefix(constants.ROOT_ROUTE).Subrouter()
 	api.Use(mux.CORSMethodMiddleware(api))
 	frontend := mux.NewRouter()
 
@@ -29,15 +33,15 @@ func main() {
 	frontend.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
 
 	apiSrv := &http.Server{
-		Addr:         variables.ApiPort,
+		Addr:         configuration.GetApiPort(),
 		ReadTimeout:  60 * time.Second,
 		WriteTimeout: 60 * time.Second,
 		IdleTimeout:  60 * time.Second,
-		Handler:      api,
+		Handler:      handlers.LoggingHandler(os.Stdout, api),
 	}
 
 	frontSrv := &http.Server{
-		Addr:         variables.FrontendPort,
+		Addr:         configuration.GetStaticPort(),
 		ReadTimeout:  60 * time.Second,
 		WriteTimeout: 60 * time.Second,
 		IdleTimeout:  60 * time.Second,
@@ -45,14 +49,14 @@ func main() {
 	}
 
 	go func() {
-		log.Println("Api listening on port ", variables.ApiPort)
+		log.Println("Api listening on port ", configuration.GetApiPort())
 		if err := apiSrv.ListenAndServe(); err != nil {
 			log.Printf("listen: %s\n", err)
 		}
 	}()
 
 	go func() {
-		log.Println("Frontend listening on port ", variables.FrontendPort)
+		log.Println("Frontend listening on port ", configuration.GetStaticPort())
 		if err := frontSrv.ListenAndServe(); err != nil {
 			log.Printf("listen: %s\n", err)
 		}
@@ -75,7 +79,13 @@ func main() {
 }
 
 func InitControllers(router *mux.Router) {
-	controllers.UserRouter(router.PathPrefix(variables.USERS_ROUTE).Subrouter())
+	router.StrictSlash(true).HandleFunc("/", StatusApi).Methods("GET")
+	controllers.UserRouter(router.PathPrefix(constants.USERS_ROUTE).Subrouter())
+	controllers.AuthRouter(router.PathPrefix(constants.AUTH_ROUTE).Subrouter())
+}
+
+func StatusApi(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Server is running"))
 }
 
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {

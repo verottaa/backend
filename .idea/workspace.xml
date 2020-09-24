@@ -20,28 +20,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bc2356da-f3fc-4c8e-b8fc-b7f90369b618" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/bin/frontend/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bin/frontend/main.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bin/frontend/main.js.map" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bin/frontend/polyfills.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bin/frontend/polyfills.js.map" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bin/frontend/runtime.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bin/frontend/runtime.js.map" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bin/frontend/scripts.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bin/frontend/scripts.js.map" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bin/frontend/styles.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bin/frontend/styles.js.map" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bin/frontend/vendor.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bin/frontend/vendor.js.map" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bin/verottaa.exe" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bin/verottaa_386" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bin/verottaa_amd64" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config/config.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/constants/constants.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/controllers/auth.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/databaser/users/users.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/dto/users.dto.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/interfaces.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/jwtMiddleware.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/verottaa.exe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/controllers/users.go" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/users.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/databaser/databaser.go" beforeDir="false" afterPath="$PROJECT_DIR$/databaser/databaser.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/models.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/utils.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/variables/constants.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/variables/variables.go" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,9 +78,31 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/bin" />
+    <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
     <property name="ts.external.directory.path" value="C:\Program Files\JetBrains\GoLand 2020.2.2\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\manzo\git\verottaa\backend\bin" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="go build verottaa" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="backend" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <filePath value="$PROJECT_DIR$/main.go" />
+      <package value="verottaa" />
+      <directory value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Build.go build verottaa" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TypeScriptGeneratedFilesManager">
@@ -116,9 +135,57 @@
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
     <state x="752" y="358" key="#Go_Modules/0.0.1920.1050@0.0.1920.1050" timestamp="1600193365778" />
+    <state x="414" y="179" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1600882449212">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state x="414" y="179" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1050/-1366.0.1366.738@0.0.1920.1050" timestamp="1600882449212" />
+    <state width="681" height="466" key="DebuggerActiveHint" timestamp="1600893530830">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="681" height="466" key="DebuggerActiveHint/0.0.1920.1050/-1366.0.1366.738@0.0.1920.1050" timestamp="1600893530830" />
+    <state width="1877" height="352" key="GridCell.Tab.0.bottom" timestamp="1600893997852">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1877" height="352" key="GridCell.Tab.0.bottom/0.0.1920.1050/-1366.0.1366.738@0.0.1920.1050" timestamp="1600893997852" />
+    <state width="1877" height="352" key="GridCell.Tab.0.center" timestamp="1600893997851">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1877" height="352" key="GridCell.Tab.0.center/0.0.1920.1050/-1366.0.1366.738@0.0.1920.1050" timestamp="1600893997851" />
+    <state width="1877" height="352" key="GridCell.Tab.0.left" timestamp="1600893997851">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1877" height="352" key="GridCell.Tab.0.left/0.0.1920.1050/-1366.0.1366.738@0.0.1920.1050" timestamp="1600893997851" />
+    <state width="1877" height="352" key="GridCell.Tab.0.right" timestamp="1600893997851">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1877" height="352" key="GridCell.Tab.0.right/0.0.1920.1050/-1366.0.1366.738@0.0.1920.1050" timestamp="1600893997851" />
+    <state width="1877" height="352" key="GridCell.Tab.1.bottom" timestamp="1600893997852">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1877" height="352" key="GridCell.Tab.1.bottom/0.0.1920.1050/-1366.0.1366.738@0.0.1920.1050" timestamp="1600893997852" />
+    <state width="1877" height="352" key="GridCell.Tab.1.center" timestamp="1600893997852">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1877" height="352" key="GridCell.Tab.1.center/0.0.1920.1050/-1366.0.1366.738@0.0.1920.1050" timestamp="1600893997852" />
+    <state width="1877" height="352" key="GridCell.Tab.1.left" timestamp="1600893997852">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1877" height="352" key="GridCell.Tab.1.left/0.0.1920.1050/-1366.0.1366.738@0.0.1920.1050" timestamp="1600893997852" />
+    <state width="1877" height="352" key="GridCell.Tab.1.right" timestamp="1600893997852">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="1877" height="352" key="GridCell.Tab.1.right/0.0.1920.1050/-1366.0.1366.738@0.0.1920.1050" timestamp="1600893997852" />
     <state x="461" y="169" key="SettingsEditor" timestamp="1600249891230">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
     <state x="461" y="169" key="SettingsEditor/0.0.1920.1050@0.0.1920.1050" timestamp="1600249891230" />
+    <state width="968" height="533" key="XDebugger.FullValuePopup" timestamp="1600886871507">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state width="968" height="533" key="XDebugger.FullValuePopup/0.0.1920.1050/-1366.0.1366.738@0.0.1920.1050" timestamp="1600886871507" />
+    <state x="569" y="135" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1600935944098">
+      <screen x="0" y="0" width="1920" height="1050" />
+    </state>
+    <state x="569" y="135" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.1920.1050/-1366.0.1366.738@0.0.1920.1050" timestamp="1600935944098" />
   </component>
 </project>
