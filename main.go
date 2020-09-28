@@ -32,12 +32,16 @@ func main() {
 	frontend.PathPrefix("/").Handler(staticHandler)
 	frontend.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
 
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
+	originsOk := handlers.AllowedOrigins([]string{"*"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"})
+
 	apiSrv := &http.Server{
 		Addr:         configuration.GetApiPort(),
 		ReadTimeout:  60 * time.Second,
 		WriteTimeout: 60 * time.Second,
 		IdleTimeout:  60 * time.Second,
-		Handler:      handlers.LoggingHandler(os.Stdout, api),
+		Handler:      handlers.LoggingHandler(os.Stdout, handlers.CORS(originsOk, headersOk, methodsOk)(api)),
 	}
 
 	frontSrv := &http.Server{

@@ -20,25 +20,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bc2356da-f3fc-4c8e-b8fc-b7f90369b618" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/config/config.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/constants/constants.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/controllers/auth.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/databaser/users/users.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/dto/users.dto.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/interfaces.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/jwtMiddleware.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/verottaa.exe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controllers/users.go" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/users.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/databaser/databaser.go" beforeDir="false" afterPath="$PROJECT_DIR$/databaser/databaser.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/models/models.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/utils.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/variables/constants.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/variables/variables.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/verottaa.exe" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
