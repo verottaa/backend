@@ -3,6 +3,7 @@ package logger
 import (
 	"log"
 	"os"
+	"strings"
 )
 
 type Logger struct {
@@ -20,12 +21,20 @@ func (l *Logger) Error(err error) {
 	l.logger.Println("[ERROR][", l.tag, "]: ", err.Error())
 }
 
-func (l *Logger) Info(info ...string) {
-	l.logger.Println("[INFO][", l.tag, "]: ", info)
+func (l *Logger) Info(infos ...string) {
+	messageArray := []string{"[INFO][", l.tag, "]: "}
+	for _, v := range infos {
+		messageArray = append(messageArray, v)
+	}
+	l.logger.Println(strings.Join(messageArray, ""))
 }
 
-func (l *Logger) Warn(warn ...string) {
-	l.logger.Println("[WARNING][", l.tag, "]: ", warn)
+func (l *Logger) Warn(warns ...string) {
+	messageArray := []string{"[WARNING][", l.tag, "]: "}
+	for _, v := range warns {
+		messageArray = append(messageArray, v)
+	}
+	l.logger.Println(strings.Join(messageArray, ""))
 }
 
 func CreateLogger(tag string) *Logger {
