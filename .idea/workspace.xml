@@ -20,9 +20,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bc2356da-f3fc-4c8e-b8fc-b7f90369b618" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/utils/logger/logger.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/verottaa.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/utils.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,6 +69,9 @@
     <property name="ts.external.directory.path" value="C:\Program Files\JetBrains\GoLand 2020.2.2\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\manzo\git\verottaa\backend\utils\logger" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\manzo\git\verottaa\backend\bin" />
     </key>

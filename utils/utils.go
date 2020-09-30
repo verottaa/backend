@@ -6,7 +6,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"regexp"
 	"time"
+	"verottaa/utils/logger"
 )
+
+const logTag = "UTILS"
+
+var localLogger = logger.CreateLogger(logTag)
 
 var globalContext = context.Background()
 
@@ -28,6 +33,8 @@ func GetContext() context.Context {
 func IdFromInterfaceToString(int interface{}) string {
 	str := fmt.Sprintf("%v", int)
 	r, err := regexp.Compile("\\w{24}")
-	HandleError(err)
+	if err != nil {
+		localLogger.Error(err)
+	}
 	return r.FindString(str)
 }

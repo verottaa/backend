@@ -2,10 +2,8 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -14,9 +12,12 @@ import (
 	"verottaa/config"
 	"verottaa/constants"
 	"verottaa/controllers"
+	"verottaa/utils/logger"
 )
 
 func main() {
+	const logTag = "MAIN"
+	logger := logger.CreateLogger(logTag)
 	configuration := config.GetConfiguration()
 
 	stopChan := make(chan os.Signal)
@@ -53,33 +54,33 @@ func main() {
 	}
 
 	go func() {
-		log.Println("Api listening on port ", configuration.GetApiPort())
+		logger.Info("Api listening on port ", configuration.GetApiPort())
 		if err := apiSrv.ListenAndServe(); err != nil {
-			log.Printf("listen: %s\n", err)
+			logger.Error(err)
 		}
 	}()
 
 	go func() {
-		log.Println("Frontend listening on port ", configuration.GetStaticPort())
+		logger.Info("Frontend listening on port ", configuration.GetStaticPort())
 		if err := frontSrv.ListenAndServe(); err != nil {
-			log.Printf("listen: %s\n", err)
+			logger.Error(err)
 		}
 	}()
 
 	<-stopChan
 
-	log.Println("Shutting down server...")
+	logger.Info("Shutting down server...")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	err := apiSrv.Shutdown(ctx)
 	if err != nil {
-		fmt.Println(err.Error())
+		logger.Error(err)
 	}
 	err = frontSrv.Shutdown(ctx)
 	if err != nil {
-		fmt.Println(err.Error())
+		logger.Error(err)
 	}
 	defer cancel()
-	log.Println("Server gracefully stopped!")
+	logger.Info("Server gracefully stopped!")
 }
 
 func InitControllers(router *mux.Router) {
