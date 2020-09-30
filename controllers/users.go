@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"log"
 	"net/http"
 	"verottaa/databaser"
 	"verottaa/models"
 	"verottaa/models/dto"
 	"verottaa/utils"
+	logpack "verottaa/utils/logger"
 )
 
 func UserRouter(router *mux.Router) {
@@ -22,23 +22,29 @@ func UserRouter(router *mux.Router) {
 }
 
 var database = databaser.GetDatabaser()
+var logTag = "USER_CONTROLLER"
+var logger *logpack.Logger
+
+func init() {
+	logger = logpack.CreateLogger(logTag)
+}
 
 func createUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var user models.User
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-		utils.HandleError(err)
+		logger.Error(err)
 		w.WriteHeader(http.StatusBadRequest)
 	}
 	if id, err := database.CreateUser(user); err != nil {
-		utils.HandleError(err)
+		logger.Error(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
 		w.WriteHeader(http.StatusCreated)
 		response := dto.UserCreatedDto{Id: utils.IdFromInterfaceToString(id)}
 		err = json.NewEncoder(w).Encode(response)
 		if err != nil {
-			utils.HandleError(err)
+			logger.Error(err)
 			w.WriteHeader(http.StatusCreated)
 		}
 	}
@@ -47,14 +53,12 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 func getUsers(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	if users, err := database.ReadAllUsers(); err != nil {
-		utils.HandleError(err)
+		logger.Error(err)
 		w.WriteHeader(http.StatusNotFound)
 	} else {
-		js, _ := json.Marshal(users)
-		log.Println(string(js))
 		err = json.NewEncoder(w).Encode(users)
 		if err != nil {
-			utils.HandleError(err)
+			logger.Error(err)
 			w.WriteHeader(http.StatusOK)
 		}
 	}
@@ -65,12 +69,12 @@ func getUserById(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, _ := primitive.ObjectIDFromHex(vars["id"])
 	if users, err := database.ReadUserById(id); err != nil {
-		utils.HandleError(err)
+		logger.Error(err)
 		w.WriteHeader(http.StatusNotFound)
 	} else {
 		err = json.NewEncoder(w).Encode(users)
 		if err != nil {
-			utils.HandleError(err)
+			logger.Error(err)
 			w.WriteHeader(http.StatusOK)
 		}
 	}
@@ -82,11 +86,11 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 	id, _ := primitive.ObjectIDFromHex(vars["id"])
 	var user models.User
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-		utils.HandleError(err)
+		logger.Error(err)
 		w.WriteHeader(http.StatusBadRequest)
 	}
 	if err := database.UpdateUser(id, user); err != nil {
-		utils.HandleError(err)
+		logger.Error(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
 		w.WriteHeader(http.StatusOK)
@@ -98,7 +102,7 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, _ := primitive.ObjectIDFromHex(vars["id"])
 	if err := database.DeleteUserById(id); err != nil {
-		utils.HandleError(err)
+		logger.Error(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
 		w.WriteHeader(http.StatusOK)
@@ -108,7 +112,7 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 func deleteAllUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	if err := database.DeleteAllUsers(); err != nil {
-		utils.HandleError(err)
+		logger.Error(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
 		w.WriteHeader(http.StatusOK)

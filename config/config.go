@@ -2,11 +2,11 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"sync"
 	"verottaa/models"
+	logpack "verottaa/utils/logger"
 )
 
 type config struct {
@@ -38,12 +38,6 @@ type Databaser interface {
 	GetDatabaseHost() string
 }
 
-func handleError(err error) {
-	if err != nil {
-		fmt.Println("[ERROR]:", err)
-	}
-}
-
 var destroyCh = make(chan bool)
 var getApiPortCh = make(chan chan string)
 var getStaticPortCh = make(chan chan string)
@@ -51,6 +45,13 @@ var getDatabaseHost = make(chan chan string)
 
 var configInstance *config
 var once sync.Once
+
+var logTag = "CONFIG"
+var logger *logpack.Logger
+
+func init() {
+	logger = logpack.CreateLogger(logTag)
+}
 
 func GetConfiguration() Configurable {
 	once.Do(func() {
@@ -98,7 +99,7 @@ func createDefaultConfig() *config {
 func createConfig() *config {
 	file, err := ioutil.ReadFile("config.json")
 	if err != nil {
-		handleError(err)
+		logger.Error(err)
 		conf := createDefaultConfig()
 		writeConfigInFile(conf)
 		return conf
@@ -107,7 +108,7 @@ func createConfig() *config {
 	instance := config{}
 	err = json.Unmarshal(file, &instance)
 	if err != nil {
-		handleError(err)
+		logger.Error(err)
 		conf := createDefaultConfig()
 		writeConfigInFile(conf)
 		return conf
@@ -118,15 +119,15 @@ func createConfig() *config {
 
 func writeConfigInFile(config *config) {
 	jsonString, err := json.Marshal(config)
-	handleError(err)
+	logger.Error(err)
 	file, err := os.Create("config.json")
-	handleError(err)
+	logger.Error(err)
 	defer func() {
 		err = file.Close()
-		handleError(err)
+		logger.Error(err)
 	}()
 	_, err = file.Write(jsonString)
-	handleError(err)
+	logger.Error(err)
 }
 
 func (c config) Destroy() {

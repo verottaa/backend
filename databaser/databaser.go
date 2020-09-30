@@ -2,16 +2,15 @@ package databaser
 
 import (
 	"context"
-	"fmt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
 	"sync"
 	"verottaa/config"
 	"verottaa/constants"
 	"verottaa/databaser/users"
 	"verottaa/models"
+	logpack "verottaa/utils/logger"
 )
 
 var configuration = config.GetConfiguration()
@@ -40,13 +39,20 @@ var destroyCh = make(chan bool)
 var instance *databaser
 var once sync.Once
 
+var logTag = "DATABASER"
+var logger *logpack.Logger
+
+func init() {
+	logger = logpack.CreateLogger(logTag)
+}
+
 func initDatabaser() *databaser {
 	db := new(databaser)
 
 	var err error
 	db.client, err = mongo.NewClient(options.Client().ApplyURI(configuration.GetDatabaseHost()))
 	if err != nil {
-		fmt.Println("[ERROR]: ", err)
+		logger.Error(err)
 	}
 
 	db.userCollection_ = users.GetUserCollection(database)
@@ -57,12 +63,12 @@ func initDatabaser() *databaser {
 func database(ctx context.Context) *mongo.Database {
 	err := instance.client.Connect(ctx)
 	if err != nil {
-		fmt.Println("[ERROR]: ", err)
+		logger.Error(err)
 	}
 
 	err = instance.client.Ping(ctx, nil)
 	if err != nil {
-		log.Fatal(err)
+		logger.Error(err)
 	}
 	return instance.client.Database(constants.DATABASE_NAME)
 }

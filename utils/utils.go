@@ -19,12 +19,6 @@ func NewObjectId() primitive.ObjectID {
 	return primitive.NewObjectID()
 }
 
-func HandleError(err error) {
-	if err != nil {
-		fmt.Println("[ERROR]:", err)
-	}
-}
-
 func GetContext() context.Context {
 	ctx, _ := context.WithTimeout(globalContext, 5*time.Second)
 	return ctx
