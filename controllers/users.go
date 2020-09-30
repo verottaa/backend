@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"log"
 	"net/http"
 	"verottaa/databaser"
 	"verottaa/models"
@@ -49,6 +50,8 @@ func getUsers(w http.ResponseWriter, _ *http.Request) {
 		utils.HandleError(err)
 		w.WriteHeader(http.StatusNotFound)
 	} else {
+		js, _ := json.Marshal(users)
+		log.Println(string(js))
 		err = json.NewEncoder(w).Encode(users)
 		if err != nil {
 			utils.HandleError(err)

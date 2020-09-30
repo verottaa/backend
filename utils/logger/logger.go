@@ -1,6 +1,9 @@
 package logger
 
-import "log"
+import (
+	"log"
+	"os"
+)
 
 type Logger struct {
 	logger *log.Logger
@@ -27,7 +30,7 @@ func (l *Logger) Warn(warn ...string) {
 
 func CreateLogger(tag string) *Logger {
 	logger := new(Logger)
-	logger.logger = new(log.Logger)
+	logger.logger = log.New(os.Stdout, "", log.Ldate|log.Ltime|log.Lshortfile)
 	logger.tag = tag
 	return logger
 }
