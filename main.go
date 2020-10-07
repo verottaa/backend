@@ -23,46 +23,28 @@ func main() {
 	stopChan := make(chan os.Signal)
 	signal.Notify(stopChan, os.Interrupt)
 
-	api := mux.NewRouter().PathPrefix(constants.ROOT_ROUTE).Subrouter()
-	api.Use(mux.CORSMethodMiddleware(api))
-	frontend := mux.NewRouter()
+	router := mux.NewRouter()
 
-	InitControllers(api)
+	InitControllers(router.PathPrefix(constants.ROOT_ROUTE).Subrouter())
 
-	staticHandler := http.StripPrefix("/", FileServer(http.Dir("./frontend/")))
-	frontend.PathPrefix("/").Handler(staticHandler)
-	frontend.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
+	spa := controllers.SpaHandler{StaticPath: "frontend", IndexPath: "index.html"}
+	router.PathPrefix("/").Handler(spa)
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
 	originsOk := handlers.AllowedOrigins([]string{"*"})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"})
 
-	apiSrv := &http.Server{
-		Addr:         configuration.GetApiPort(),
+	server := &http.Server{
+		Addr:         configuration.GetPort(),
 		ReadTimeout:  60 * time.Second,
 		WriteTimeout: 60 * time.Second,
 		IdleTimeout:  60 * time.Second,
-		Handler:      handlers.LoggingHandler(os.Stdout, handlers.CORS(originsOk, headersOk, methodsOk)(api)),
-	}
-
-	frontSrv := &http.Server{
-		Addr:         configuration.GetStaticPort(),
-		ReadTimeout:  60 * time.Second,
-		WriteTimeout: 60 * time.Second,
-		IdleTimeout:  60 * time.Second,
-		Handler:      frontend,
+		Handler:      handlers.LoggingHandler(os.Stdout, handlers.CORS(originsOk, headersOk, methodsOk)(router)),
 	}
 
 	go func() {
-		logger.Info("Api listening on port ", configuration.GetApiPort())
-		if err := apiSrv.ListenAndServe(); err != nil {
-			logger.Error(err)
-		}
-	}()
-
-	go func() {
-		logger.Info("Frontend listening on port ", configuration.GetStaticPort())
-		if err := frontSrv.ListenAndServe(); err != nil {
+		logger.Info("Api listening on port ", configuration.GetPort())
+		if err := server.ListenAndServe(); err != nil {
 			logger.Error(err)
 		}
 	}()
@@ -71,11 +53,7 @@ func main() {
 
 	logger.Info("Shutting down server...")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	err := apiSrv.Shutdown(ctx)
-	if err != nil {
-		logger.Error(err)
-	}
-	err = frontSrv.Shutdown(ctx)
+	err := server.Shutdown(ctx)
 	if err != nil {
 		logger.Error(err)
 	}

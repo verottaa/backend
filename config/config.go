@@ -10,13 +10,8 @@ import (
 )
 
 type config struct {
-	Ports    ports    `json:"ports"`
+	Port     string   `json:"port"`
 	Database database `json:"database"`
-}
-
-type ports struct {
-	Api    string `json:"api"`
-	Static string `json:"static"`
 }
 
 type database struct {
@@ -30,8 +25,7 @@ type Configurable interface {
 }
 
 type Portable interface {
-	GetApiPort() string
-	GetStaticPort() string
+	GetPort() string
 }
 
 type Databaser interface {
@@ -39,8 +33,7 @@ type Databaser interface {
 }
 
 var destroyCh = make(chan bool)
-var getApiPortCh = make(chan chan string)
-var getStaticPortCh = make(chan chan string)
+var getPortCh = make(chan chan string)
 var getDatabaseHost = make(chan chan string)
 
 var configInstance *config
@@ -60,10 +53,8 @@ func GetConfiguration() Configurable {
 			for
 			{
 				select {
-				case ch := <-getApiPortCh:
-					ch <- configInstance.Ports.Api
-				case ch := <-getStaticPortCh:
-					ch <- configInstance.Ports.Static
+				case ch := <-getPortCh:
+					ch <- configInstance.Port
 				case ch := <-getDatabaseHost:
 					ch <- configInstance.Database.Host
 				case <-destroyCh:
@@ -82,16 +73,9 @@ func createDefaultDatabase() *database {
 	return instance
 }
 
-func createDefaultPorts() *ports {
-	instance := new(ports)
-	instance.Static = ":32678"
-	instance.Api = ":8089"
-	return instance
-}
-
 func createDefaultConfig() *config {
 	instance := new(config)
-	instance.Ports = *createDefaultPorts()
+	instance.Port = ":8080"
 	instance.Database = *createDefaultDatabase()
 	return instance
 }
@@ -132,23 +116,15 @@ func writeConfigInFile(config *config) {
 
 func (c config) Destroy() {
 	destroyCh <- true
-	close(getApiPortCh)
-	close(getStaticPortCh)
+	close(getPortCh)
 	close(destroyCh)
 	configInstance = nil
 }
 
-func (c config) GetApiPort() string {
+func (c config) GetPort() string {
 	resCh := make(chan string)
 	defer close(resCh)
-	getApiPortCh <- resCh
-	return <-resCh
-}
-
-func (c config) GetStaticPort() string {
-	resCh := make(chan string)
-	defer close(resCh)
-	getStaticPortCh <- resCh
+	getPortCh <- resCh
 	return <-resCh
 }
 
