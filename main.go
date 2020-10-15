@@ -2,12 +2,15 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"mime"
 	"net/http"
 	"os"
 	"os/signal"
 	"path"
+	"path/filepath"
 	"time"
 	"verottaa/config"
 	"verottaa/constants"
@@ -26,9 +29,11 @@ func main() {
 	router := mux.NewRouter()
 
 	InitControllers(router.PathPrefix(constants.ROOT_ROUTE).Subrouter())
-
-	spa := controllers.SpaHandler{StaticPath: "frontend", IndexPath: "index.html"}
-	router.PathPrefix("/").Handler(spa)
+	staticHandler := http.StripPrefix("/", FileServer(http.Dir("./frontend/")))
+	router.PathPrefix("/").Handler(staticHandler)
+	router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
+	//spa := controllers.SpaHandler{StaticPath: "frontend", IndexPath: "index.html"}
+	//router.PathPrefix("/").Handler(spa)
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
 	originsOk := handlers.AllowedOrigins([]string{"*"})
@@ -64,6 +69,7 @@ func main() {
 func InitControllers(router *mux.Router) {
 	router.StrictSlash(true).HandleFunc("/", StatusApi).Methods("GET")
 	controllers.UserRouter(router.PathPrefix(constants.USERS_ROUTE).Subrouter())
+	controllers.PlansRouter(router.PathPrefix(constants.PLANS_ROUTE).Subrouter())
 	controllers.AuthRouter(router.PathPrefix(constants.AUTH_ROUTE).Subrouter())
 }
 
@@ -78,6 +84,8 @@ func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 func FileServer(fs http.FileSystem) http.Handler {
 	fsh := http.FileServer(fs)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", mimeTypeForFile(r.URL.Path))
+		fmt.Println(w.Header().Get("Content-Type"))
 		_, err := fs.Open(path.Clean(r.URL.Path))
 		if os.IsNotExist(err) {
 			NotFoundHandler(w, r)
@@ -85,4 +93,19 @@ func FileServer(fs http.FileSystem) http.Handler {
 		}
 		fsh.ServeHTTP(w, r)
 	})
+}
+
+func mimeTypeForFile(file string) string {
+	ext := filepath.Ext(file)
+	switch ext {
+	case ".htm", ".html":
+		return "text/html"
+	case ".css":
+		return "text/css"
+	case ".js":
+		return "application/javascript"
+
+	default:
+		return mime.TypeByExtension(ext)
+	}
 }

@@ -1,9 +1,6 @@
 {
-  "ports": {
-    "api": ":32678",
-    "static": ":4200"
-  },
+  "port": ":8080",
   "database": {
-    "host": "mongodb://localhost:27017/"
+    "host": "mongodb://localhost:27017"
   }
 }
