@@ -8,50 +8,64 @@ import (
 	"sync"
 	"verottaa/config"
 	"verottaa/constants"
+	"verottaa/databaser/assignments"
 	"verottaa/databaser/plans"
 	"verottaa/databaser/users"
 	"verottaa/models"
+	assignmentModel "verottaa/models/assignments"
+	plansModel "verottaa/models/plans"
+	userModel "verottaa/models/users"
 	"verottaa/utils"
-	logpack "verottaa/utils/logger"
 )
 
 var configuration = config.GetConfiguration()
 
 type databaser struct {
-	client          *mongo.Client
-	userCollection_ users.UserCollection
-	planCollection_ plans.PlanCollection
+	client                *mongo.Client
+	userCollection_       users.UserCollection
+	planCollection_       plans.PlanCollection
+	assignmentCollection_ assignments.AssignmentCollection
 }
 
 type DB interface {
 	models.Destroyable
-	UserCollection
+	UsersCollection
 	PlansCollection
+	AssignmentsCollection
 }
 
-type UserCollection interface {
-	CreateUser(models.User) (interface{}, error)
-	ReadAllUsers() ([]models.User, error)
-	ReadUserById(primitive.ObjectID) (models.User, error)
-	UpdateUser(primitive.ObjectID, models.User) error
+type UsersCollection interface {
+	CreateUser(userModel.User) (interface{}, error)
+	ReadAllUsers() ([]userModel.User, error)
+	ReadUserById(primitive.ObjectID) (userModel.User, error)
+	UpdateUser(primitive.ObjectID, userModel.User) error
 	DeleteUserById(primitive.ObjectID) error
 	DeleteAllUsers() error
 }
 
 type PlansCollection interface {
-	CreatePlan(models.Plan) (interface{}, error)
-	ReadAllPlans() ([]models.Plan, error)
-	ReadPlanById(primitive.ObjectID) (models.Plan, error)
-	UpdatePlan(primitive.ObjectID, models.Plan) error
+	CreatePlan(plansModel.Plan) (interface{}, error)
+	ReadAllPlans() ([]plansModel.Plan, error)
+	ReadPlanById(primitive.ObjectID) (plansModel.Plan, error)
+	UpdatePlan(primitive.ObjectID, plansModel.Plan) error
 	DeletePlanById(primitive.ObjectID) error
 	DeleteAllPlans() error
 
-	CreateStepInPlan(id primitive.ObjectID, step models.Step) (interface{}, error)
-	ReadAllStepsInPlan(id primitive.ObjectID) ([]models.Step, error)
-	ReadStepByIdInPlan(planId primitive.ObjectID, stepId primitive.ObjectID) (models.Step, error)
-	UpdateStepInPlan(id primitive.ObjectID, stepId primitive.ObjectID, updateStep models.Step) error
+	CreateStepInPlan(id primitive.ObjectID, step plansModel.Step) (interface{}, error)
+	ReadAllStepsInPlan(id primitive.ObjectID) ([]plansModel.Step, error)
+	ReadStepByIdInPlan(planId primitive.ObjectID, stepId primitive.ObjectID) (plansModel.Step, error)
+	UpdateStepInPlan(id primitive.ObjectID, stepId primitive.ObjectID, updateStep plansModel.Step) error
 	DeleteStepInPlan(planId primitive.ObjectID, stepId primitive.ObjectID) error
 	DeleteAllStepsInPlan(id primitive.ObjectID) error
+}
+
+type AssignmentsCollection interface {
+	CreateAssignment(assignmentModel.Assignment) (interface{}, error)
+	ReadAllAssignments() ([]assignmentModel.Assignment, error)
+	ReadAssignmentById(primitive.ObjectID) (assignmentModel.Assignment, error)
+	UpdateAssignment(primitive.ObjectID, assignmentModel.Assignment) error
+	DeleteAssignmentById(primitive.ObjectID) error
+	DeleteAllAssignments() error
 }
 
 var destroyCh = make(chan bool)
@@ -59,24 +73,18 @@ var destroyCh = make(chan bool)
 var instance *databaser
 var once sync.Once
 
-var logTag = "DATABASER"
-var logger *logpack.Logger
-
-func init() {
-	logger = logpack.CreateLogger(logTag)
-}
-
 func initDatabaser() *databaser {
 	db := new(databaser)
 
 	var err error
 	db.client, err = mongo.NewClient(options.Client().ApplyURI(configuration.GetDatabaseHost()))
 	if err != nil {
-		logger.Error(err)
+		// TODO: логирование
 	}
 
 	db.userCollection_ = users.GetUserCollection(database)
 	db.planCollection_ = plans.GetPlanCollection(database)
+	db.assignmentCollection_ = assignments.GetPlanCollection(database)
 
 	return db
 }
@@ -84,14 +92,14 @@ func initDatabaser() *databaser {
 func database(ctx context.Context) *mongo.Database {
 	err := instance.client.Connect(ctx)
 	if err != nil {
-		logger.Error(err)
+		// TODO: логирование
 	}
 
 	err = instance.client.Ping(ctx, nil)
 	if err != nil {
-		logger.Error(err)
+		// TODO: логирование
 	}
-	return instance.client.Database(constants.DATABASE_NAME)
+	return instance.client.Database(constants.DatabaseName)
 }
 
 func GetDatabaser() DB {
@@ -128,23 +136,27 @@ func (d databaser) planCollection() plans.PlanCollection {
 	return d.planCollection_
 }
 
+func (d databaser) assignmentCollection() assignments.AssignmentCollection {
+	return d.assignmentCollection_
+}
+
 //
 //	USERS
 //
 
-func (d databaser) CreateUser(user models.User) (interface{}, error) {
+func (d databaser) CreateUser(user userModel.User) (interface{}, error) {
 	return d.userCollection().Create(user)
 }
 
-func (d databaser) ReadAllUsers() ([]models.User, error) {
+func (d databaser) ReadAllUsers() ([]userModel.User, error) {
 	return d.userCollection().ReadAll()
 }
 
-func (d databaser) ReadUserById(id primitive.ObjectID) (models.User, error) {
+func (d databaser) ReadUserById(id primitive.ObjectID) (userModel.User, error) {
 	return d.userCollection().ReadById(id)
 }
 
-func (d databaser) UpdateUser(id primitive.ObjectID, user models.User) error {
+func (d databaser) UpdateUser(id primitive.ObjectID, user userModel.User) error {
 	return d.userCollection().Update(id, user)
 }
 
@@ -160,19 +172,19 @@ func (d databaser) DeleteAllUsers() error {
 //	PLANS:
 //
 
-func (d databaser) CreatePlan(plan models.Plan) (interface{}, error) {
+func (d databaser) CreatePlan(plan plansModel.Plan) (interface{}, error) {
 	return d.planCollection().Create(plan)
 }
 
-func (d databaser) ReadAllPlans() ([]models.Plan, error) {
+func (d databaser) ReadAllPlans() ([]plansModel.Plan, error) {
 	return d.planCollection().ReadAll()
 }
 
-func (d databaser) ReadPlanById(id primitive.ObjectID) (models.Plan, error) {
+func (d databaser) ReadPlanById(id primitive.ObjectID) (plansModel.Plan, error) {
 	return d.planCollection().ReadById(id)
 }
 
-func (d databaser) UpdatePlan(id primitive.ObjectID, plan models.Plan) error {
+func (d databaser) UpdatePlan(id primitive.ObjectID, plan plansModel.Plan) error {
 	return d.planCollection().Update(id, plan)
 }
 
@@ -188,7 +200,7 @@ func (d databaser) DeleteAllPlans() error {
 //	plans/STEPS
 //
 
-func (d databaser) CreateStepInPlan(planId primitive.ObjectID, step models.Step) (interface{}, error) {
+func (d databaser) CreateStepInPlan(planId primitive.ObjectID, step plansModel.Step) (interface{}, error) {
 	plan, err := d.ReadPlanById(planId)
 	if err != nil {
 		// TODO: logger
@@ -205,7 +217,7 @@ func (d databaser) CreateStepInPlan(planId primitive.ObjectID, step models.Step)
 	return stepId, err
 }
 
-func (d databaser) ReadAllStepsInPlan(planId primitive.ObjectID) ([]models.Step, error) {
+func (d databaser) ReadAllStepsInPlan(planId primitive.ObjectID) ([]plansModel.Step, error) {
 	plan, err := d.ReadPlanById(planId)
 	if err != nil {
 		// TODO: logger
@@ -214,21 +226,21 @@ func (d databaser) ReadAllStepsInPlan(planId primitive.ObjectID) ([]models.Step,
 	return plan.Steps, nil
 }
 
-func (d databaser) ReadStepByIdInPlan(planId primitive.ObjectID, stepId primitive.ObjectID) (models.Step, error) {
+func (d databaser) ReadStepByIdInPlan(planId primitive.ObjectID, stepId primitive.ObjectID) (plansModel.Step, error) {
 	plan, err := d.ReadPlanById(planId)
 	if err != nil {
 		// TODO: logger
-		return models.Step{}, err
+		return plansModel.Step{}, err
 	}
 	step, err := plan.GetStepById(stepId)
 	if err != nil {
 		// TODO: logger
-		return models.Step{}, err
+		return plansModel.Step{}, err
 	}
 	return step, nil
 }
 
-func (d databaser) UpdateStepInPlan(planId primitive.ObjectID, stepId primitive.ObjectID, updatedStep models.Step) error {
+func (d databaser) UpdateStepInPlan(planId primitive.ObjectID, stepId primitive.ObjectID, updatedStep plansModel.Step) error {
 	plan, err := d.ReadPlanById(planId)
 	if err != nil {
 		// TODO: logger
@@ -279,4 +291,32 @@ func (d databaser) DeleteAllStepsInPlan(planId primitive.ObjectID) error {
 		return err
 	}
 	return nil
+}
+
+//
+//	ASSIGNMENTS
+//
+
+func (d databaser) CreateAssignment(assignment assignmentModel.Assignment) (interface{}, error) {
+	return d.assignmentCollection().Create(assignment)
+}
+
+func (d databaser) ReadAllAssignments() ([]assignmentModel.Assignment, error) {
+	return d.assignmentCollection().ReadAll()
+}
+
+func (d databaser) ReadAssignmentById(id primitive.ObjectID) (assignmentModel.Assignment, error) {
+	return d.assignmentCollection().ReadById(id)
+}
+
+func (d databaser) UpdateAssignment(id primitive.ObjectID, assignment assignmentModel.Assignment) error {
+	return d.assignmentCollection().Update(id, assignment)
+}
+
+func (d databaser) DeleteAssignmentById(id primitive.ObjectID) error {
+	return d.assignmentCollection().DeleteById(id)
+}
+
+func (d databaser) DeleteAllAssignments() error {
+	return d.assignmentCollection().DeleteAll()
 }

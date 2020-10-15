@@ -8,6 +8,7 @@ import (
 	"sync"
 	"verottaa/constants"
 	"verottaa/models"
+	"verottaa/models/plans"
 	"verottaa/utils"
 )
 
@@ -26,16 +27,16 @@ type PlanCollection interface {
 }
 
 type Creatable interface {
-	Create(models.Plan) (interface{}, error)
+	Create(plans.Plan) (interface{}, error)
 }
 
 type Readable interface {
-	ReadAll() ([]models.Plan, error)
-	ReadById(primitive.ObjectID) (models.Plan, error)
+	ReadAll() ([]plans.Plan, error)
+	ReadById(primitive.ObjectID) (plans.Plan, error)
 }
 
 type Updatable interface {
-	Update(primitive.ObjectID, models.Plan) error
+	Update(primitive.ObjectID, plans.Plan) error
 }
 
 type Deletable interface {
@@ -50,7 +51,7 @@ var once sync.Once
 
 func createInstance(databaseFunc func(ctx context.Context) *mongo.Database) *planController {
 	inst := new(planController)
-	inst.collectionName = constants.USERS_COLLECTION
+	inst.collectionName = constants.PlansCollection
 	inst.databaseFunc = databaseFunc
 	return inst
 }
@@ -82,51 +83,52 @@ func (c planController) getCollection(ctx context.Context) *mongo.Collection {
 	return collection
 }
 
-func (c planController) Create(plan models.Plan) (interface{}, error) {
+func (c planController) Create(plan plans.Plan) (interface{}, error) {
 	ctx := utils.GetContext()
 
 	plan.RecalculatePeriod()
-	insert := bson.M{
-		"steps":  plan.Steps,
-		"period": plan.Period,
-	}
+	insert := plan.ToBson()
 
 	res, err := c.getCollection(ctx).InsertOne(ctx, insert)
-	return res.InsertedID, err
+	if err != nil {
+		// TODO: логирование
+		return nil, err
+	}
+	return res.InsertedID, nil
 }
 
-func (c planController) ReadAll() ([]models.Plan, error) {
+func (c planController) ReadAll() ([]plans.Plan, error) {
 	ctx := utils.GetContext()
-	var plans []models.Plan
+	var allPlans []plans.Plan
 
 	cursor, err := c.getCollection(ctx).Find(ctx, bson.D{})
 	if err != nil {
-		return plans, err
+		return allPlans, err
 	}
 
 	for cursor.Next(ctx) {
-		var plan models.Plan
+		var plan plans.Plan
 		err := cursor.Decode(&plan)
 		if err != nil {
-			return plans, err
+			return allPlans, err
 		}
 
-		plans = append(plans, plan)
+		allPlans = append(allPlans, plan)
 	}
 
 	if err := cursor.Err(); err != nil {
-		return plans, nil
+		return allPlans, nil
 	}
 
 	err = cursor.Close(ctx)
 
-	return plans, err
+	return allPlans, err
 }
 
-func (c planController) ReadById(id primitive.ObjectID) (models.Plan, error) {
+func (c planController) ReadById(id primitive.ObjectID) (plans.Plan, error) {
 	ctx := utils.GetContext()
 	var filter = bson.D{primitive.E{Key: "_id", Value: id}}
-	var plan models.Plan
+	var plan plans.Plan
 
 	err := c.getCollection(ctx).FindOne(ctx, filter).Decode(&plan)
 	if err != nil {
@@ -136,7 +138,7 @@ func (c planController) ReadById(id primitive.ObjectID) (models.Plan, error) {
 	return plan, err
 }
 
-func (c planController) Update(id primitive.ObjectID, plan models.Plan) error {
+func (c planController) Update(id primitive.ObjectID, plan plans.Plan) error {
 	// Пересчитываем период для того,
 	// чтобы это было корректное число,
 	// потому что на фронте это выполняться не будет
@@ -165,8 +167,4 @@ func (c planController) DeleteById(id primitive.ObjectID) error {
 	ctx := utils.GetContext()
 	_, err := c.getCollection(ctx).DeleteOne(ctx, filter)
 	return err
-}
-
-func (c planController) CreateStep() {
-
 }

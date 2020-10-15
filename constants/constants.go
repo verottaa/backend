@@ -1,14 +1,16 @@
 package constants
 
 const (
-	SIGNING_KEY = "secret"
+	SigningKey = "secret"
 
-	DATABASE_NAME = "verottaa"
+	DatabaseName = "verottaa"
 
-	USERS_COLLECTION = "users"
+	UsersCollection       = "users"
+	PlansCollection       = "plans"
+	AssignmentsCollection = "assignments"
 
-	ROOT_ROUTE  = "/verottaa/api/v1"
-	USERS_ROUTE = "/users"
-	PLANS_ROUTE = "/plans"
-	AUTH_ROUTE  = "/auth"
+	RootRoute  = "/verottaa/api/v1"
+	UsersRoute = "/users"
+	PlansRoute = "/plans"
+	AuthRoute  = "/auth"
 )

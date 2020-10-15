@@ -8,6 +8,7 @@ import (
 	"sync"
 	"verottaa/constants"
 	"verottaa/models"
+	"verottaa/models/users"
 	"verottaa/utils"
 )
 
@@ -26,16 +27,16 @@ type UserCollection interface {
 }
 
 type Creatable interface {
-	Create(user models.User) (interface{}, error)
+	Create(user users.User) (interface{}, error)
 }
 
 type Readable interface {
-	ReadAll() ([]models.User, error)
-	ReadById(id primitive.ObjectID) (models.User, error)
+	ReadAll() ([]users.User, error)
+	ReadById(id primitive.ObjectID) (users.User, error)
 }
 
 type Updatable interface {
-	Update(id primitive.ObjectID, user models.User) error
+	Update(id primitive.ObjectID, user users.User) error
 }
 
 type Deletable interface {
@@ -50,7 +51,7 @@ var once sync.Once
 
 func createInstance(databaseFunc func(ctx context.Context) *mongo.Database) *userController {
 	inst := new(userController)
-	inst.collectionName = constants.USERS_COLLECTION
+	inst.collectionName = constants.UsersCollection
 	inst.databaseFunc = databaseFunc
 	return inst
 }
@@ -82,54 +83,50 @@ func (c userController) getCollection(ctx context.Context) *mongo.Collection {
 	return collection
 }
 
-func (c userController) Create(user models.User) (interface{}, error) {
+func (c userController) Create(user users.User) (interface{}, error) {
 	ctx := utils.GetContext()
 
-	insert := bson.M{
-		"firstName":  user.FirstName,
-		"secondName": user.SecondName,
-		"patronymic": user.Patronymic,
-		"type":       user.Type,
-		"branch":     user.Branch,
-		"department": user.Department,
-	}
+	insert := user.ToBson()
 
 	res, err := c.getCollection(ctx).InsertOne(ctx, insert)
+	if err != nil {
+		return nil, err
+	}
 	return res.InsertedID, err
 }
 
-func (c userController) ReadAll() ([]models.User, error) {
+func (c userController) ReadAll() ([]users.User, error) {
 	ctx := utils.GetContext()
-	var users []models.User
+	var allUsers []users.User
 
 	cursor, err := c.getCollection(ctx).Find(ctx, bson.D{})
 	if err != nil {
-		return users, err
+		return allUsers, err
 	}
 
 	for cursor.Next(ctx) {
-		var user models.User
+		var user users.User
 		err := cursor.Decode(&user)
 		if err != nil {
-			return users, err
+			return allUsers, err
 		}
 
-		users = append(users, user)
+		allUsers = append(allUsers, user)
 	}
 
 	if err := cursor.Err(); err != nil {
-		return users, nil
+		return allUsers, nil
 	}
 
 	err = cursor.Close(ctx)
 
-	return users, err
+	return allUsers, err
 }
 
-func (c userController) ReadById(id primitive.ObjectID) (models.User, error) {
+func (c userController) ReadById(id primitive.ObjectID) (users.User, error) {
 	ctx := utils.GetContext()
 	var filter = bson.D{primitive.E{Key: "_id", Value: id}}
-	var user models.User
+	var user users.User
 
 	err := c.getCollection(ctx).FindOne(ctx, filter).Decode(&user)
 	if err != nil {
@@ -139,7 +136,7 @@ func (c userController) ReadById(id primitive.ObjectID) (models.User, error) {
 	return user, err
 }
 
-func (c userController) Update(id primitive.ObjectID, user models.User) error {
+func (c userController) Update(id primitive.ObjectID, user users.User) error {
 	filter := bson.D{{"_id", id}}
 	update := bson.D{
 		{"$set", bson.D{

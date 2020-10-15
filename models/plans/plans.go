@@ -1,19 +1,10 @@
-package models
+package plans
 
 import (
 	"errors"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
-
-type User struct {
-	Id         primitive.ObjectID `json:"id" bson:"_id"`
-	FirstName  string             `json:"firstName" bson:"firstName"`
-	SecondName string             `json:"secondName" bson:"secondName"`
-	Patronymic string             `json:"patronymic" bson:"patronymic"`
-	Type       string             `json:"type" bson:"type"`
-	Branch     string             `json:"branch" bson:"branch"`
-	Department string             `json:"department" bson:"department"`
-}
 
 type Step struct {
 	Id            primitive.ObjectID `json:"id" bson:"_id"`
@@ -23,10 +14,26 @@ type Step struct {
 	Materials     string             `json:"materials" bson:"materials"`
 }
 
+func (s *Step) ToBson() bson.M {
+	return bson.M{
+		"steps":         s.Title,
+		"education_form": s.EducationForm,
+		"period":        s.Period,
+		"materials":     s.Materials,
+	}
+}
+
 type Plan struct {
 	Id     primitive.ObjectID `json:"id" bson:"_id"`
 	Steps  []Step             `json:"steps" bson:"steps"`
 	Period int                `json:"period" bson:"period"`
+}
+
+func (p *Plan) ToBson() bson.M {
+	return bson.M{
+		"steps":  p.Steps,
+		"period": p.Period,
+	}
 }
 
 func (p *Plan) AddStep(step Step) {

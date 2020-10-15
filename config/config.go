@@ -6,7 +6,6 @@ import (
 	"os"
 	"sync"
 	"verottaa/models"
-	logpack "verottaa/utils/logger"
 )
 
 type config struct {
@@ -38,13 +37,6 @@ var getDatabaseHost = make(chan chan string)
 
 var configInstance *config
 var once sync.Once
-
-var logTag = "CONFIG"
-var logger *logpack.Logger
-
-func init() {
-	logger = logpack.CreateLogger(logTag)
-}
 
 func GetConfiguration() Configurable {
 	once.Do(func() {
@@ -83,7 +75,7 @@ func createDefaultConfig() *config {
 func createConfig() *config {
 	file, err := ioutil.ReadFile("config.json")
 	if err != nil {
-		logger.Error(err)
+		// TODO: логирование
 		conf := createDefaultConfig()
 		writeConfigInFile(conf)
 		return conf
@@ -92,7 +84,7 @@ func createConfig() *config {
 	instance := config{}
 	err = json.Unmarshal(file, &instance)
 	if err != nil {
-		logger.Error(err)
+		// TODO: логирование
 		conf := createDefaultConfig()
 		writeConfigInFile(conf)
 		return conf
@@ -103,15 +95,15 @@ func createConfig() *config {
 
 func writeConfigInFile(config *config) {
 	jsonString, err := json.Marshal(config)
-	logger.Error(err)
+	// TODO: логирование
 	file, err := os.Create("config.json")
-	logger.Error(err)
+	// TODO: логирование
 	defer func() {
 		err = file.Close()
-		logger.Error(err)
+		// TODO: логирование
 	}()
 	_, err = file.Write(jsonString)
-	logger.Error(err)
+	// TODO: логирование
 }
 
 func (c config) Destroy() {

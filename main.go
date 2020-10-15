@@ -15,12 +15,9 @@ import (
 	"verottaa/config"
 	"verottaa/constants"
 	"verottaa/controllers"
-	"verottaa/utils/logger"
 )
 
 func main() {
-	const logTag = "MAIN"
-	logger := logger.CreateLogger(logTag)
 	configuration := config.GetConfiguration()
 
 	stopChan := make(chan os.Signal)
@@ -28,7 +25,7 @@ func main() {
 
 	router := mux.NewRouter()
 
-	InitControllers(router.PathPrefix(constants.ROOT_ROUTE).Subrouter())
+	InitControllers(router.PathPrefix(constants.RootRoute).Subrouter())
 	staticHandler := http.StripPrefix("/", FileServer(http.Dir("./frontend/")))
 	router.PathPrefix("/").Handler(staticHandler)
 	router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
@@ -48,33 +45,40 @@ func main() {
 	}
 
 	go func() {
-		logger.Info("Api listening on port ", configuration.GetPort())
+		//logger.Info("Api listening on port ", configuration.GetPort())
+		// TODO: логирование
 		if err := server.ListenAndServe(); err != nil {
-			logger.Error(err)
+			// TODO: логирование
 		}
 	}()
 
 	<-stopChan
 
-	logger.Info("Shutting down server...")
+	//logger.Info("Shutting down server...")
+	// TODO: логирование
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	err := server.Shutdown(ctx)
 	if err != nil {
-		logger.Error(err)
+		// TODO: логирование
+		//logger.Error(err)
 	}
 	defer cancel()
-	logger.Info("Server gracefully stopped!")
+	// TODO: логирование
+	//logger.Info("Server gracefully stopped!")
 }
 
 func InitControllers(router *mux.Router) {
 	router.StrictSlash(true).HandleFunc("/", StatusApi).Methods("GET")
-	controllers.UserRouter(router.PathPrefix(constants.USERS_ROUTE).Subrouter())
-	controllers.PlansRouter(router.PathPrefix(constants.PLANS_ROUTE).Subrouter())
-	controllers.AuthRouter(router.PathPrefix(constants.AUTH_ROUTE).Subrouter())
+	controllers.UserRouter(router.PathPrefix(constants.UsersRoute).Subrouter())
+	controllers.PlansRouter(router.PathPrefix(constants.PlansRoute).Subrouter())
+	controllers.AuthRouter(router.PathPrefix(constants.AuthRoute).Subrouter())
 }
 
-func StatusApi(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Server is running"))
+func StatusApi(w http.ResponseWriter, _ *http.Request) {
+	_, err := w.Write([]byte("Server is running"))
+	if err != nil {
+		// TODO: логирование
+	}
 }
 
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
