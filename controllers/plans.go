@@ -17,12 +17,13 @@ func PlansRouter(router *mux.Router) {
 	router.HandleFunc("/{id}", getPlanById).Methods("GET")
 	router.HandleFunc("/{id}", updatePlan).Methods("PUT")
 	router.HandleFunc("/{id}", deletePlan).Methods("DELETE")
-	/*router.HandleFunc("/{id}/steps/", createStep).Methods("POST")
+
 	router.HandleFunc("/{id}/steps/", getAllSteps).Methods("GET")
+	router.HandleFunc("/{id}/steps/", createStep).Methods("POST")
 	router.HandleFunc("/{id}/steps/", deleteAllSteps).Methods("DELETE")
 	router.HandleFunc("/{id}/steps/{stepId}", getStepById).Methods("GET")
 	router.HandleFunc("/{id}/steps/{stepId}", updateStepById).Methods("PUT")
-	router.HandleFunc("/{id}/steps/{stepId}", deleteStepById).Methods("DELETE")*/
+	router.HandleFunc("/{id}/steps/{stepId}", deleteStepById).Methods("DELETE")
 }
 
 func createPlan(w http.ResponseWriter, r *http.Request) {
@@ -117,7 +118,7 @@ func deleteAllPlans(w http.ResponseWriter, r *http.Request) {
 
 // STEPS:
 
-/*func createStep(w http.ResponseWriter, r *http.Request) {
+func createStep(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
 	id, _ := primitive.ObjectIDFromHex(vars["id"])
@@ -215,4 +216,3 @@ func deleteAllSteps(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}
 }
-*/

@@ -11,6 +11,7 @@ import (
 	"verottaa/databaser/plans"
 	"verottaa/databaser/users"
 	"verottaa/models"
+	"verottaa/utils"
 	logpack "verottaa/utils/logger"
 )
 
@@ -127,6 +128,10 @@ func (d databaser) planCollection() plans.PlanCollection {
 	return d.planCollection_
 }
 
+//
+//	USERS
+//
+
 func (d databaser) CreateUser(user models.User) (interface{}, error) {
 	return d.userCollection().Create(user)
 }
@@ -150,6 +155,10 @@ func (d databaser) DeleteUserById(id primitive.ObjectID) error {
 func (d databaser) DeleteAllUsers() error {
 	return d.userCollection().DeleteAll()
 }
+
+//
+//	PLANS:
+//
 
 func (d databaser) CreatePlan(plan models.Plan) (interface{}, error) {
 	return d.planCollection().Create(plan)
@@ -175,26 +184,99 @@ func (d databaser) DeleteAllPlans() error {
 	return d.planCollection().DeleteAll()
 }
 
+//
+//	plans/STEPS
+//
+
 func (d databaser) CreateStepInPlan(planId primitive.ObjectID, step models.Step) (interface{}, error) {
-	panic("implement me")
+	plan, err := d.ReadPlanById(planId)
+	if err != nil {
+		// TODO: logger
+		return nil, err
+	}
+	var stepId = utils.NewObjectId()
+	step.Id = stepId
+	plan.AddStep(step)
+	err = d.UpdatePlan(planId, plan)
+	if err != nil {
+		//TODO: logger
+		return nil, err
+	}
+	return stepId, err
 }
 
 func (d databaser) ReadAllStepsInPlan(planId primitive.ObjectID) ([]models.Step, error) {
-	panic("implement me")
+	plan, err := d.ReadPlanById(planId)
+	if err != nil {
+		// TODO: logger
+		return nil, err
+	}
+	return plan.Steps, nil
 }
 
 func (d databaser) ReadStepByIdInPlan(planId primitive.ObjectID, stepId primitive.ObjectID) (models.Step, error) {
-	panic("implement me")
+	plan, err := d.ReadPlanById(planId)
+	if err != nil {
+		// TODO: logger
+		return models.Step{}, err
+	}
+	step, err := plan.GetStepById(stepId)
+	if err != nil {
+		// TODO: logger
+		return models.Step{}, err
+	}
+	return step, nil
 }
 
-func (d databaser) UpdateStepInPlan(planId primitive.ObjectID, stepId primitive.ObjectID, updateStep models.Step) error {
-	panic("implement me")
+func (d databaser) UpdateStepInPlan(planId primitive.ObjectID, stepId primitive.ObjectID, updatedStep models.Step) error {
+	plan, err := d.ReadPlanById(planId)
+	if err != nil {
+		// TODO: logger
+		return err
+	}
+	err = plan.UpdateStep(stepId, updatedStep)
+	if err != nil {
+		// TODO: logger
+		return err
+	}
+	err = d.UpdatePlan(planId, plan)
+	if err != nil {
+		//TODO: logger
+		return err
+	}
+	return nil
 }
 
 func (d databaser) DeleteStepInPlan(planId primitive.ObjectID, stepId primitive.ObjectID) error {
-	panic("implement me")
+	plan, err := d.ReadPlanById(planId)
+	if err != nil {
+		// TODO: logger
+		return err
+	}
+	err = plan.RemoveStep(stepId)
+	if err != nil {
+		// TODO: logger
+		return err
+	}
+	err = d.UpdatePlan(planId, plan)
+	if err != nil {
+		//TODO: logger
+		return err
+	}
+	return nil
 }
 
 func (d databaser) DeleteAllStepsInPlan(planId primitive.ObjectID) error {
-	panic("implement me")
+	plan, err := d.ReadPlanById(planId)
+	if err != nil {
+		// TODO: logger
+		return err
+	}
+	plan.RemoveAllSteps()
+	err = d.UpdatePlan(planId, plan)
+	if err != nil {
+		//TODO: logger
+		return err
+	}
+	return nil
 }

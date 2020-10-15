@@ -50,14 +50,16 @@ func (p *Plan) RemoveAllSteps() {
 	p.RecalculatePeriod()
 }
 
-func (p *Plan) UpdateStep(id primitive.ObjectID, step Step) {
+func (p *Plan) UpdateStep(id primitive.ObjectID, step Step) error {
 	var index, _, err = p.findStepIndexById(id)
 	if err != nil {
 		// TODO: логирование
-		return
+		return err
 	}
+	step.Id = id
 	p.Steps[index] = step
 	p.RecalculatePeriod()
+	return nil
 }
 
 func (p *Plan) GetSteps() []Step {

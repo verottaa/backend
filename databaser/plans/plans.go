@@ -166,3 +166,7 @@ func (c planController) DeleteById(id primitive.ObjectID) error {
 	_, err := c.getCollection(ctx).DeleteOne(ctx, filter)
 	return err
 }
+
+func (c planController) CreateStep() {
+
+}
