@@ -9,5 +9,6 @@ const (
 
 	ROOT_ROUTE  = "/verottaa/api/v1"
 	USERS_ROUTE = "/users"
+	PLANS_ROUTE = "/plans"
 	AUTH_ROUTE  = "/auth"
 )

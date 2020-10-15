@@ -41,7 +41,7 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
 		w.WriteHeader(http.StatusCreated)
-		response := dto.UserCreatedDto{Id: utils.IdFromInterfaceToString(id)}
+		response := dto.ObjectCreatedDto{Id: utils.IdFromInterfaceToString(id)}
 		err = json.NewEncoder(w).Encode(response)
 		if err != nil {
 			logger.Error(err)

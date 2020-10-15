@@ -8,6 +8,7 @@ import (
 	"sync"
 	"verottaa/config"
 	"verottaa/constants"
+	"verottaa/databaser/plans"
 	"verottaa/databaser/users"
 	"verottaa/models"
 	logpack "verottaa/utils/logger"
@@ -18,20 +19,38 @@ var configuration = config.GetConfiguration()
 type databaser struct {
 	client          *mongo.Client
 	userCollection_ users.UserCollection
+	planCollection_ plans.PlanCollection
 }
 
 type DB interface {
 	models.Destroyable
 	UserCollection
+	PlansCollection
 }
 
 type UserCollection interface {
-	CreateUser(user models.User) (interface{}, error)
+	CreateUser(models.User) (interface{}, error)
 	ReadAllUsers() ([]models.User, error)
-	ReadUserById(id primitive.ObjectID) (models.User, error)
-	UpdateUser(id primitive.ObjectID, user models.User) error
-	DeleteUserById(id primitive.ObjectID) error
+	ReadUserById(primitive.ObjectID) (models.User, error)
+	UpdateUser(primitive.ObjectID, models.User) error
+	DeleteUserById(primitive.ObjectID) error
 	DeleteAllUsers() error
+}
+
+type PlansCollection interface {
+	CreatePlan(models.Plan) (interface{}, error)
+	ReadAllPlans() ([]models.Plan, error)
+	ReadPlanById(primitive.ObjectID) (models.Plan, error)
+	UpdatePlan(primitive.ObjectID, models.Plan) error
+	DeletePlanById(primitive.ObjectID) error
+	DeleteAllPlans() error
+
+	CreateStepInPlan(id primitive.ObjectID, step models.Step) (interface{}, error)
+	ReadAllStepsInPlan(id primitive.ObjectID) ([]models.Step, error)
+	ReadStepByIdInPlan(planId primitive.ObjectID, stepId primitive.ObjectID) (models.Step, error)
+	UpdateStepInPlan(id primitive.ObjectID, stepId primitive.ObjectID, updateStep models.Step) error
+	DeleteStepInPlan(planId primitive.ObjectID, stepId primitive.ObjectID) error
+	DeleteAllStepsInPlan(id primitive.ObjectID) error
 }
 
 var destroyCh = make(chan bool)
@@ -56,6 +75,7 @@ func initDatabaser() *databaser {
 	}
 
 	db.userCollection_ = users.GetUserCollection(database)
+	db.planCollection_ = plans.GetPlanCollection(database)
 
 	return db
 }
@@ -95,11 +115,16 @@ func (d databaser) Destroy() {
 	destroyCh <- true
 	close(destroyCh)
 	instance.userCollection().Destroy()
+	instance.planCollection().Destroy()
 	instance = nil
 }
 
 func (d databaser) userCollection() users.UserCollection {
 	return d.userCollection_
+}
+
+func (d databaser) planCollection() plans.PlanCollection {
+	return d.planCollection_
 }
 
 func (d databaser) CreateUser(user models.User) (interface{}, error) {
@@ -124,4 +149,52 @@ func (d databaser) DeleteUserById(id primitive.ObjectID) error {
 
 func (d databaser) DeleteAllUsers() error {
 	return d.userCollection().DeleteAll()
+}
+
+func (d databaser) CreatePlan(plan models.Plan) (interface{}, error) {
+	return d.planCollection().Create(plan)
+}
+
+func (d databaser) ReadAllPlans() ([]models.Plan, error) {
+	return d.planCollection().ReadAll()
+}
+
+func (d databaser) ReadPlanById(id primitive.ObjectID) (models.Plan, error) {
+	return d.planCollection().ReadById(id)
+}
+
+func (d databaser) UpdatePlan(id primitive.ObjectID, plan models.Plan) error {
+	return d.planCollection().Update(id, plan)
+}
+
+func (d databaser) DeletePlanById(id primitive.ObjectID) error {
+	return d.planCollection().DeleteById(id)
+}
+
+func (d databaser) DeleteAllPlans() error {
+	return d.planCollection().DeleteAll()
+}
+
+func (d databaser) CreateStepInPlan(planId primitive.ObjectID, step models.Step) (interface{}, error) {
+	panic("implement me")
+}
+
+func (d databaser) ReadAllStepsInPlan(planId primitive.ObjectID) ([]models.Step, error) {
+	panic("implement me")
+}
+
+func (d databaser) ReadStepByIdInPlan(planId primitive.ObjectID, stepId primitive.ObjectID) (models.Step, error) {
+	panic("implement me")
+}
+
+func (d databaser) UpdateStepInPlan(planId primitive.ObjectID, stepId primitive.ObjectID, updateStep models.Step) error {
+	panic("implement me")
+}
+
+func (d databaser) DeleteStepInPlan(planId primitive.ObjectID, stepId primitive.ObjectID) error {
+	panic("implement me")
+}
+
+func (d databaser) DeleteAllStepsInPlan(planId primitive.ObjectID) error {
+	panic("implement me")
 }

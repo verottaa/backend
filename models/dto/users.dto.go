@@ -1,5 +1,5 @@
 package dto
 
-type UserCreatedDto struct {
+type ObjectCreatedDto struct {
 	Id string `json:"id"`
 }
