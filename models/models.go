@@ -60,6 +60,19 @@ func (p *Plan) UpdateStep(id primitive.ObjectID, step Step) {
 	p.RecalculatePeriod()
 }
 
+func (p *Plan) GetSteps() []Step {
+	return p.Steps
+}
+
+func (p *Plan) GetStepById(id primitive.ObjectID) (Step, error) {
+	var _, step, err = p.findStepIndexById(id)
+	if err != nil {
+		// TODO: логирование
+		return step, err
+	}
+	return step, nil
+}
+
 func (p *Plan) findStepIndexById(id primitive.ObjectID) (int, Step, error) {
 	for i, step := range p.Steps {
 		if step.Id == id {
@@ -70,7 +83,7 @@ func (p *Plan) findStepIndexById(id primitive.ObjectID) (int, Step, error) {
 }
 
 func (p *Plan) RecalculatePeriod() {
-	var period int = 0
+	var period = 0
 	for _, step := range p.Steps {
 		period = period + step.Period
 	}
