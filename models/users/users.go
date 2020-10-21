@@ -7,8 +7,8 @@ import (
 
 type User struct {
 	Id         primitive.ObjectID `json:"id" bson:"_id"`
-	FirstName  string             `json:"firstName" bson:"firstName"`
-	SecondName string             `json:"secondName" bson:"secondName"`
+	Name       string             `json:"firstName" bson:"firstName"`
+	Surname    string             `json:"secondName" bson:"secondName"`
 	Patronymic string             `json:"patronymic" bson:"patronymic"`
 	Type       string             `json:"type" bson:"type"`
 	Branch     string             `json:"branch" bson:"branch"`
@@ -17,8 +17,8 @@ type User struct {
 
 func (u *User) ToBson() bson.M {
 	return bson.M{
-		"firstName":  u.FirstName,
-		"secondName": u.SecondName,
+		"name":  u.Name,
+		"surname": u.Surname,
 		"patronymic": u.Patronymic,
 		"type":       u.Type,
 		"branch":     u.Branch,
