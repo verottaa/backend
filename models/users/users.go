@@ -13,15 +13,17 @@ type User struct {
 	Type       string             `json:"type" bson:"type"`
 	Branch     string             `json:"branch" bson:"branch"`
 	Department string             `json:"department" bson:"department"`
+	Position   string             `json:"position" bson:"position"`
 }
 
 func (u *User) ToBson() bson.M {
 	return bson.M{
-		"name":  u.Name,
-		"surname": u.Surname,
+		"name":       u.Name,
+		"surname":    u.Surname,
 		"patronymic": u.Patronymic,
 		"type":       u.Type,
 		"branch":     u.Branch,
 		"department": u.Department,
+		"position":   u.Position,
 	}
 }

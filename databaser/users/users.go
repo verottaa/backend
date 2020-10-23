@@ -140,12 +140,13 @@ func (c userController) Update(id primitive.ObjectID, user users.User) error {
 	filter := bson.D{{"_id", id}}
 	update := bson.D{
 		{"$set", bson.D{
-			{"firstName", user.Name},
-			{"secondName", user.Surname},
+			{"name", user.Name},
+			{"surname", user.Surname},
 			{"patronymic", user.Patronymic},
 			{"type", user.Type},
 			{"branch", user.Branch},
 			{"department", user.Department},
+			{"position", user.Position},
 		}},
 	}
 
