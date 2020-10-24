@@ -99,7 +99,7 @@ func (c assignmentController) Create(assignment assignments.Assignment) (interfa
 
 func (c assignmentController) CreateByUserAndPlanIds(userId primitive.ObjectID, planId primitive.ObjectID) (interface{}, error) {
 	assignment := assignments.NewAssignment(userId, planId)
-	return c.Create(*assignment)
+	return c.Create(assignment)
 }
 
 func (c assignmentController) ReadAll() ([]assignments.Assignment, error) {

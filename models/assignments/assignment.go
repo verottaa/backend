@@ -17,10 +17,19 @@ type Assignment struct {
 	CurrentStepId    primitive.ObjectID `json:"current_step_id" bson:"current_step_id"`
 }
 
-func NewAssignment(userId primitive.ObjectID, planId primitive.ObjectID) *Assignment {
-	// TODO: сделать расчёт дат
+func NewAssignment(userId primitive.ObjectID, planId primitive.ObjectID) Assignment {
 	// TODO: сделать назначение куратора
-	return &Assignment{UserId: userId, PlanId: planId}
+	assignment := Assignment{
+		UserId:           userId,
+		PlanId:           planId,
+		CuratorId:        primitive.ObjectID{},
+		PlannedStartDate: "",
+		PlannedEndDate:   "",
+		FactStartDate:    "",
+		FactEndDate:      "",
+		CurrentStepId:    primitive.ObjectID{},
+	}
+	return assignment
 }
 
 func (a *Assignment) ToBson() bson.M {
