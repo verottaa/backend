@@ -1,16 +1,17 @@
-package controllers
+package plans
 
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
+	"verottaa/databaser"
 	"verottaa/models/dto"
 	"verottaa/models/plans"
 	"verottaa/utils"
 )
 
-func PlansRouter(router *mux.Router) {
+func Router(router *mux.Router) {
 	router.HandleFunc("/", createPlan).Methods("POST")
 	router.HandleFunc("/", getPlans).Methods("GET")
 	router.HandleFunc("/", deleteAllPlans).Methods("DELETE")
@@ -25,6 +26,8 @@ func PlansRouter(router *mux.Router) {
 	router.HandleFunc("/{id}/steps/{stepId}", updateStepById).Methods("PUT")
 	router.HandleFunc("/{id}/steps/{stepId}", deleteStepById).Methods("DELETE")
 }
+
+var database = databaser.GetDatabaser()
 
 func createPlan(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")

@@ -71,6 +71,7 @@ func InitControllers(router *mux.Router) {
 	router.StrictSlash(true).HandleFunc("/", StatusApi).Methods("GET")
 	controllers.UserRouter(router.PathPrefix(constants.UsersRoute).Subrouter())
 	controllers.PlansRouter(router.PathPrefix(constants.PlansRoute).Subrouter())
+	controllers.AssignmentsRouter(router.PathPrefix(constants.AssignmentsRoute).Subrouter())
 	controllers.AuthRouter(router.PathPrefix(constants.AuthRoute).Subrouter())
 }
 

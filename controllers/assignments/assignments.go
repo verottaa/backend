@@ -1,4 +1,4 @@
-package controllers
+package assignments
 
 import (
 	"encoding/json"
@@ -6,30 +6,30 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 	"verottaa/databaser"
+	"verottaa/models/assignments"
 	"verottaa/models/dto"
-	"verottaa/models/users"
 	"verottaa/utils"
 )
 
-func UserRouter(router *mux.Router) {
-	router.HandleFunc("/", createUser).Methods("POST")
-	router.HandleFunc("/", getUsers).Methods("GET")
-	router.HandleFunc("/", deleteAllUsers).Methods("DELETE")
-	router.HandleFunc("/{id}", getUserById).Methods("GET")
-	router.HandleFunc("/{id}", updateUser).Methods("PUT")
-	router.HandleFunc("/{id}", deleteUser).Methods("DELETE")
+func Router(router *mux.Router) {
+	router.HandleFunc("/", createAssignment).Methods("POST")
+	router.HandleFunc("/", getAssignments).Methods("GET")
+	router.HandleFunc("/", deleteAllAssignments).Methods("DELETE")
+	router.HandleFunc("/{id}", getAssignmentById).Methods("GET")
+	router.HandleFunc("/{id}", updateAssignment).Methods("PUT")
+	router.HandleFunc("/{id}", deleteAssignment).Methods("DELETE")
 }
 
 var database = databaser.GetDatabaser()
 
-func createUser(w http.ResponseWriter, r *http.Request) {
+func createAssignment(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	var user users.User
-	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+	var assignment assignments.Assignment
+	if err := json.NewDecoder(r.Body).Decode(&assignment); err != nil {
 		// TODO: логирование
 		w.WriteHeader(http.StatusBadRequest)
 	}
-	if id, err := database.CreateUser(user); err != nil {
+	if id, err := database.CreateAssignment(assignment); err != nil {
 		// TODO: логирование
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
@@ -43,13 +43,13 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getUsers(w http.ResponseWriter, _ *http.Request) {
+func getAssignments(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	if allUsers, err := database.ReadAllUsers(); err != nil {
+	if allAssignments, err := database.ReadAllAssignments(); err != nil {
 		// TODO: логирование
 		w.WriteHeader(http.StatusNotFound)
 	} else {
-		err = json.NewEncoder(w).Encode(allUsers)
+		err = json.NewEncoder(w).Encode(allAssignments)
 		if err != nil {
 			// TODO: логирование
 			w.WriteHeader(http.StatusOK)
@@ -57,15 +57,15 @@ func getUsers(w http.ResponseWriter, _ *http.Request) {
 	}
 }
 
-func getUserById(w http.ResponseWriter, r *http.Request) {
+func getAssignmentById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
 	id, _ := primitive.ObjectIDFromHex(vars["id"])
-	if user, err := database.ReadUserById(id); err != nil {
+	if assignment, err := database.ReadAssignmentById(id); err != nil {
 		// TODO: логирование
 		w.WriteHeader(http.StatusNotFound)
 	} else {
-		err = json.NewEncoder(w).Encode(user)
+		err = json.NewEncoder(w).Encode(assignment)
 		if err != nil {
 			// TODO: логирование
 			w.WriteHeader(http.StatusOK)
@@ -73,16 +73,20 @@ func getUserById(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func updateUser(w http.ResponseWriter, r *http.Request) {
+func updateAssignment(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
-	id, _ := primitive.ObjectIDFromHex(vars["id"])
-	var user users.User
-	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+	id, err := primitive.ObjectIDFromHex(vars["id"])
+	if err != nil {
 		// TODO: логирование
 		w.WriteHeader(http.StatusBadRequest)
 	}
-	if err := database.UpdateUser(id, user); err != nil {
+	var assignment assignments.Assignment
+	if err = json.NewDecoder(r.Body).Decode(&assignment); err != nil {
+		// TODO: логирование
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	if err := database.UpdateAssignment(id, assignment); err != nil {
 		// TODO: логирование
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
@@ -90,11 +94,11 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func deleteUser(w http.ResponseWriter, r *http.Request) {
+func deleteAssignment(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
 	id, _ := primitive.ObjectIDFromHex(vars["id"])
-	if err := database.DeleteUserById(id); err != nil {
+	if err := database.DeleteAssignmentById(id); err != nil {
 		// TODO: логирование
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
@@ -102,9 +106,9 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func deleteAllUsers(w http.ResponseWriter, _ *http.Request) {
+func deleteAllAssignments(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	if err := database.DeleteAllUsers(); err != nil {
+	if err := database.DeleteAllAssignments(); err != nil {
 		// TODO: логирование
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {

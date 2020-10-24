@@ -23,13 +23,13 @@ func NewAssignment(userId primitive.ObjectID, planId primitive.ObjectID) *Assign
 
 func (a *Assignment) ToBson() bson.M {
 	return bson.M{
-		"userId":           a.UserId,
-		"planId":           a.PlanId,
-		"curatorId":        a.CuratorId,
-		"plannedStartDate": a.PlannedStartDate,
-		"plannedEndDate":   a.PlannedEndDate,
-		"factStartDate":    a.FactStartDate,
-		"factEndDate":      a.FactEndDate,
-		"currentStepId":    a.CurrentStepId,
+		"user_id":            a.UserId,
+		"plan_id":            a.PlanId,
+		"curator_id":         a.CuratorId,
+		"planned_start_date": a.PlannedStartDate,
+		"planned_end_date":   a.PlannedEndDate,
+		"fact_start_date":    a.FactStartDate,
+		"fact_end_date":      a.FactEndDate,
+		"current_step_id":    a.CurrentStepId,
 	}
 }

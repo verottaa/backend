@@ -141,14 +141,14 @@ func (c assignmentController) Update(id primitive.ObjectID, assignment assignmen
 	filter := bson.D{{"_id", id}}
 	update := bson.D{
 		{"$set", bson.D{
-			{"userId", assignment.UserId},
-			{"planId", assignment.PlanId},
-			{"curatorId", assignment.CuratorId},
-			{"plannedStartDate", assignment.PlannedStartDate},
-			{"plannedEndDate", assignment.PlannedEndDate},
-			{"factStartDate", assignment.FactStartDate},
-			{"factEndDate", assignment.FactEndDate},
-			{"currentStepId", assignment.CurrentStepId},
+			{"user_id", assignment.UserId},
+			{"plan_d", assignment.PlanId},
+			{"curator_id", assignment.CuratorId},
+			{"planned_start_date", assignment.PlannedStartDate},
+			{"planned_end_date", assignment.PlannedEndDate},
+			{"fact_start_date", assignment.FactStartDate},
+			{"fact_end_date", assignment.FactEndDate},
+			{"current_step_id", assignment.CurrentStepId},
 		}},
 	}
 

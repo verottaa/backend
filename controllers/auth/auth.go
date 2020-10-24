@@ -1,4 +1,4 @@
-package controllers
+package auth
 
 import (
 	"github.com/dgrijalva/jwt-go"
@@ -8,7 +8,7 @@ import (
 	"verottaa/constants"
 )
 
-func AuthRouter(router *mux.Router) {
+func Router(router *mux.Router) {
 	router.HandleFunc("/signIn", signInHandler).Methods("POST")
 }
 
