@@ -18,6 +18,8 @@ func Router(router *mux.Router) {
 	router.HandleFunc("/{id}", getUserById).Methods("GET")
 	router.HandleFunc("/{id}", updateUser).Methods("PUT")
 	router.HandleFunc("/{id}", deleteUser).Methods("DELETE")
+
+	router.HandleFunc("/{id}/assign-user-to/{planId}", assignUserTo).Methods("POST")
 }
 
 var database = databaser.GetDatabaser()
@@ -109,5 +111,34 @@ func deleteAllUsers(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
 		w.WriteHeader(http.StatusOK)
+	}
+}
+
+// OTHER FEATURES:
+
+// TODO: дублирование функционала. Исправить.
+func assignUserTo(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userId, err := primitive.ObjectIDFromHex(vars["id"])
+	if err != nil {
+		// TODO: логирование
+		w.WriteHeader(http.StatusNotFound)
+	}
+	planId, err := primitive.ObjectIDFromHex(vars["planId"])
+	if err != nil {
+		// TODO: логирование
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	if id, err := database.CreateAssignmentByUserAndPlanIds(userId, planId); err != nil {
+		// TODO: логирование
+		w.WriteHeader(http.StatusInternalServerError)
+	} else {
+		response := dto.ObjectCreatedDto{Id: utils.IdFromInterfaceToString(id)}
+		err = json.NewEncoder(w).Encode(response)
+		if err != nil {
+			// TODO: логирование
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+		w.WriteHeader(http.StatusCreated)
 	}
 }

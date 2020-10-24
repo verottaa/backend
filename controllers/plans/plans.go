@@ -19,6 +19,8 @@ func Router(router *mux.Router) {
 	router.HandleFunc("/{id}", updatePlan).Methods("PUT")
 	router.HandleFunc("/{id}", deletePlan).Methods("DELETE")
 
+	router.HandleFunc("/{id}/assign-to-user/{userId}", assignToUser).Methods("GET")
+
 	router.HandleFunc("/{id}/steps/", getAllSteps).Methods("GET")
 	router.HandleFunc("/{id}/steps/", createStep).Methods("POST")
 	router.HandleFunc("/{id}/steps/", deleteAllSteps).Methods("DELETE")
@@ -28,6 +30,8 @@ func Router(router *mux.Router) {
 }
 
 var database = databaser.GetDatabaser()
+
+// PLANS CRUD:
 
 func createPlan(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -40,13 +44,13 @@ func createPlan(w http.ResponseWriter, r *http.Request) {
 		// TODO: логирование
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
-		w.WriteHeader(http.StatusCreated)
 		response := dto.ObjectCreatedDto{Id: utils.IdFromInterfaceToString(id)}
 		err = json.NewEncoder(w).Encode(response)
 		if err != nil {
 			// TODO: логирование
-			w.WriteHeader(http.StatusCreated)
+			w.WriteHeader(http.StatusInternalServerError)
 		}
+		w.WriteHeader(http.StatusCreated)
 	}
 }
 
@@ -119,7 +123,7 @@ func deleteAllPlans(w http.ResponseWriter, _ *http.Request) {
 	}
 }
 
-// STEPS:
+// STEPS CRUD:
 
 func createStep(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -217,5 +221,34 @@ func deleteAllSteps(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
 		w.WriteHeader(http.StatusOK)
+	}
+}
+
+// OTHER FEATURES:
+
+// TODO: дублирование функционала. Исправить.
+func assignToUser(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	planId, err := primitive.ObjectIDFromHex(vars["id"])
+	if err != nil {
+		// TODO: логирование
+		w.WriteHeader(http.StatusNotFound)
+	}
+	userId, err := primitive.ObjectIDFromHex(vars["userId"])
+	if err != nil {
+		// TODO: логирование
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	if id, err := database.CreateAssignmentByUserAndPlanIds(userId, planId); err != nil {
+		// TODO: логирование
+		w.WriteHeader(http.StatusInternalServerError)
+	} else {
+		response := dto.ObjectCreatedDto{Id: utils.IdFromInterfaceToString(id)}
+		err = json.NewEncoder(w).Encode(response)
+		if err != nil {
+			// TODO: логирование
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+		w.WriteHeader(http.StatusCreated)
 	}
 }

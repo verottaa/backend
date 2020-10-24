@@ -18,6 +18,8 @@ type Assignment struct {
 }
 
 func NewAssignment(userId primitive.ObjectID, planId primitive.ObjectID) *Assignment {
+	// TODO: сделать расчёт дат
+	// TODO: сделать назначение куратора
 	return &Assignment{UserId: userId, PlanId: planId}
 }
 

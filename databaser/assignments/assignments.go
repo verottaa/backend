@@ -28,6 +28,7 @@ type AssignmentCollection interface {
 
 type Creatable interface {
 	Create(assignments.Assignment) (interface{}, error)
+	CreateByUserAndPlanIds(primitive.ObjectID, primitive.ObjectID) (interface{}, error)
 }
 
 type Readable interface {
@@ -94,6 +95,11 @@ func (c assignmentController) Create(assignment assignments.Assignment) (interfa
 		return nil, err
 	}
 	return res.InsertedID, nil
+}
+
+func (c assignmentController) CreateByUserAndPlanIds(userId primitive.ObjectID, planId primitive.ObjectID) (interface{}, error) {
+	assignment := assignments.NewAssignment(userId, planId)
+	return c.Create(*assignment)
 }
 
 func (c assignmentController) ReadAll() ([]assignments.Assignment, error) {

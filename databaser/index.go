@@ -61,6 +61,7 @@ type PlansCollection interface {
 
 type AssignmentsCollection interface {
 	CreateAssignment(assignmentModel.Assignment) (interface{}, error)
+	CreateAssignmentByUserAndPlanIds(primitive.ObjectID, primitive.ObjectID) (interface{}, error)
 	ReadAllAssignments() ([]assignmentModel.Assignment, error)
 	ReadAssignmentById(primitive.ObjectID) (assignmentModel.Assignment, error)
 	UpdateAssignment(primitive.ObjectID, assignmentModel.Assignment) error
@@ -299,6 +300,10 @@ func (d databaser) DeleteAllStepsInPlan(planId primitive.ObjectID) error {
 
 func (d databaser) CreateAssignment(assignment assignmentModel.Assignment) (interface{}, error) {
 	return d.assignmentCollection().Create(assignment)
+}
+
+func (d databaser) CreateAssignmentByUserAndPlanIds(userId primitive.ObjectID, planId primitive.ObjectID) (interface{}, error) {
+	return d.assignmentCollection().CreateByUserAndPlanIds(userId, planId)
 }
 
 func (d databaser) ReadAllAssignments() ([]assignmentModel.Assignment, error) {
