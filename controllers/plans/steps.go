@@ -3,62 +3,53 @@ package plans
 import (
 	"github.com/gorilla/mux"
 	"net/http"
-	"verottaa/controllers/controller_helpers"
-	"verottaa/databaser"
 	"verottaa/models/dto"
 	"verottaa/models/plans"
 	"verottaa/utils"
 )
 
-func Router(router *mux.Router) {
-	PlansRouter(router)
-	StepsRouter(router)
+func StepsRouter(router *mux.Router) {
+	router.HandleFunc("/{id}/steps/", getAllSteps).Methods("GET")
+	router.HandleFunc("/{id}/steps/", createStep).Methods("POST")
+	router.HandleFunc("/{id}/steps/", deleteAllSteps).Methods("DELETE")
+	router.HandleFunc("/{id}/steps/{stepId}", getStepById).Methods("GET")
+	router.HandleFunc("/{id}/steps/{stepId}", updateStepById).Methods("PUT")
+	router.HandleFunc("/{id}/steps/{stepId}", deleteStepById).Methods("DELETE")
 }
 
-func PlansRouter(router *mux.Router) {
-	router.HandleFunc("/", createPlan).Methods("POST")
-	router.HandleFunc("/", getPlans).Methods("GET")
-	router.HandleFunc("/", deleteAllPlans).Methods("DELETE")
-	router.HandleFunc("/{id}", getPlanById).Methods("GET")
-	router.HandleFunc("/{id}", updatePlan).Methods("PUT")
-	router.HandleFunc("/{id}", deletePlan).Methods("DELETE")
-}
-
-var database = databaser.GetDatabaser()
-var variableReader = controller_helpers.GetVariableReader()
-var jsonWorker = controller_helpers.GetJsonWorker()
-
-func createPlan(w http.ResponseWriter, r *http.Request) {
+func createStep(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	var plan plans.Plan
-	err := jsonWorker.Decode(r, plan)
+	id := variableReader.GetObjectIdFromQueryByName(r, "id")
+	var step plans.Step
+	err := jsonWorker.Decode(r, step)
 	if err != nil {
 		// TODO: логирование
 		w.WriteHeader(http.StatusBadRequest)
 	}
-	id, err := database.CreatePlan(plan)
+	createdId, err := database.CreateStepInPlan(id, step)
 	if err != nil {
 		// TODO: логирование
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
-		response := dto.ObjectCreatedDto{Id: utils.IdFromInterfaceToString(id)}
+		w.WriteHeader(http.StatusCreated)
+		response := dto.ObjectCreatedDto{Id: utils.IdFromInterfaceToString(createdId)}
 		err = jsonWorker.Encode(w, response)
 		if err != nil {
 			// TODO: логирование
-			w.WriteHeader(http.StatusInternalServerError)
+			w.WriteHeader(http.StatusCreated)
 		}
-		w.WriteHeader(http.StatusCreated)
 	}
 }
 
-func getPlans(w http.ResponseWriter, _ *http.Request) {
+func getAllSteps(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	allPlans, err := database.ReadAllPlans()
+	id := variableReader.GetObjectIdFromQueryByName(r, "id")
+	steps, err := database.ReadAllStepsInPlan(id)
 	if err != nil {
 		// TODO: логирование
 		w.WriteHeader(http.StatusNotFound)
 	} else {
-		err = jsonWorker.Encode(w, allPlans)
+		err = jsonWorker.Encode(w, steps)
 		if err != nil {
 			// TODO: логирование
 			w.WriteHeader(http.StatusOK)
@@ -66,15 +57,16 @@ func getPlans(w http.ResponseWriter, _ *http.Request) {
 	}
 }
 
-func getPlanById(w http.ResponseWriter, r *http.Request) {
+func getStepById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	id := variableReader.GetObjectIdFromQueryByName(r, "id")
-	plan, err := database.ReadPlanById(id)
+	stepId := variableReader.GetObjectIdFromQueryByName(r, "stepId")
+	step, err := database.ReadStepByIdInPlan(id, stepId)
 	if err != nil {
 		// TODO: логирование
 		w.WriteHeader(http.StatusNotFound)
 	} else {
-		err = jsonWorker.Encode(w, plan)
+		err = jsonWorker.Encode(w, step)
 		if err != nil {
 			// TODO: логирование
 			w.WriteHeader(http.StatusOK)
@@ -82,16 +74,17 @@ func getPlanById(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func updatePlan(w http.ResponseWriter, r *http.Request) {
+func updateStepById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	id := variableReader.GetObjectIdFromQueryByName(r, "id")
-	var plan plans.Plan
-	err := jsonWorker.Decode(r, plan)
+	stepId := variableReader.GetObjectIdFromQueryByName(r, "stepId")
+	var step plans.Step
+	err := jsonWorker.Decode(r, step)
 	if err != nil {
 		// TODO: логирование
 		w.WriteHeader(http.StatusBadRequest)
 	}
-	err = database.UpdatePlan(id, plan)
+	err = database.UpdateStepInPlan(id, stepId, step)
 	if err != nil {
 		// TODO: логирование
 		w.WriteHeader(http.StatusInternalServerError)
@@ -100,10 +93,11 @@ func updatePlan(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func deletePlan(w http.ResponseWriter, r *http.Request) {
+func deleteStepById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	id := variableReader.GetObjectIdFromQueryByName(r, "id")
-	err := database.DeletePlanById(id)
+	stepId := variableReader.GetObjectIdFromQueryByName(r, "stepId")
+	err := database.DeleteStepInPlan(id, stepId)
 	if err != nil {
 		// TODO: логирование
 		w.WriteHeader(http.StatusInternalServerError)
@@ -112,9 +106,10 @@ func deletePlan(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func deleteAllPlans(w http.ResponseWriter, _ *http.Request) {
+func deleteAllSteps(w http.ResponseWriter, r *http.Request) {
+	id := variableReader.GetObjectIdFromQueryByName(r, "id")
 	w.Header().Set("Content-Type", "application/json")
-	err := database.DeleteAllPlans()
+	err := database.DeleteAllStepsInPlan(id)
 	if err != nil {
 		// TODO: логирование
 		w.WriteHeader(http.StatusInternalServerError)

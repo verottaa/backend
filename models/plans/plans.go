@@ -16,10 +16,10 @@ type Step struct {
 
 func (s *Step) ToBson() bson.M {
 	return bson.M{
-		"steps":         s.Title,
+		"title":          s.Title,
 		"education_form": s.EducationForm,
-		"period":        s.Period,
-		"materials":     s.Materials,
+		"period":         s.Period,
+		"materials":      s.Materials,
 	}
 }
 

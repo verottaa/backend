@@ -1,10 +1,9 @@
 package users
 
 import (
-	"encoding/json"
 	"github.com/gorilla/mux"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
+	"verottaa/controllers/controller_helpers"
 	"verottaa/databaser"
 	"verottaa/models/dto"
 	"verottaa/models/users"
@@ -18,26 +17,28 @@ func Router(router *mux.Router) {
 	router.HandleFunc("/{id}", getUserById).Methods("GET")
 	router.HandleFunc("/{id}", updateUser).Methods("PUT")
 	router.HandleFunc("/{id}", deleteUser).Methods("DELETE")
-
-	router.HandleFunc("/{id}/assign-user-to/{planId}", assignUserTo).Methods("POST")
 }
 
 var database = databaser.GetDatabaser()
+var variableReader = controller_helpers.GetVariableReader()
+var jsonWorker = controller_helpers.GetJsonWorker()
 
 func createUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var user users.User
-	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+	err := jsonWorker.Decode(r, user)
+	if err != nil {
 		// TODO: логирование
 		w.WriteHeader(http.StatusBadRequest)
 	}
-	if id, err := database.CreateUser(user); err != nil {
+	id, err := database.CreateUser(user)
+	if err != nil {
 		// TODO: логирование
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
 		w.WriteHeader(http.StatusCreated)
 		response := dto.ObjectCreatedDto{Id: utils.IdFromInterfaceToString(id)}
-		err = json.NewEncoder(w).Encode(response)
+		err = jsonWorker.Encode(w, response)
 		if err != nil {
 			// TODO: логирование
 			w.WriteHeader(http.StatusCreated)
@@ -47,11 +48,12 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 
 func getUsers(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	if allUsers, err := database.ReadAllUsers(); err != nil {
+	allUsers, err := database.ReadAllUsers()
+	if err != nil {
 		// TODO: логирование
 		w.WriteHeader(http.StatusNotFound)
 	} else {
-		err = json.NewEncoder(w).Encode(allUsers)
+		err = jsonWorker.Encode(w, allUsers)
 		if err != nil {
 			// TODO: логирование
 			w.WriteHeader(http.StatusOK)
@@ -61,13 +63,13 @@ func getUsers(w http.ResponseWriter, _ *http.Request) {
 
 func getUserById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	vars := mux.Vars(r)
-	id, _ := primitive.ObjectIDFromHex(vars["id"])
-	if user, err := database.ReadUserById(id); err != nil {
+	id := variableReader.GetObjectIdFromQueryByName(r, "id")
+	user, err := database.ReadUserById(id)
+	if err != nil {
 		// TODO: логирование
 		w.WriteHeader(http.StatusNotFound)
 	} else {
-		err = json.NewEncoder(w).Encode(user)
+		err = jsonWorker.Encode(w, user)
 		if err != nil {
 			// TODO: логирование
 			w.WriteHeader(http.StatusOK)
@@ -77,14 +79,15 @@ func getUserById(w http.ResponseWriter, r *http.Request) {
 
 func updateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	vars := mux.Vars(r)
-	id, _ := primitive.ObjectIDFromHex(vars["id"])
+	id := variableReader.GetObjectIdFromQueryByName(r, "id")
 	var user users.User
-	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+	err := jsonWorker.Decode(r, user)
+	if err != nil {
 		// TODO: логирование
 		w.WriteHeader(http.StatusBadRequest)
 	}
-	if err := database.UpdateUser(id, user); err != nil {
+	err = database.UpdateUser(id, user)
+	if err != nil {
 		// TODO: логирование
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
@@ -94,9 +97,9 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 
 func deleteUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	vars := mux.Vars(r)
-	id, _ := primitive.ObjectIDFromHex(vars["id"])
-	if err := database.DeleteUserById(id); err != nil {
+	id := variableReader.GetObjectIdFromQueryByName(r, "id")
+	err := database.DeleteUserById(id)
+	if err != nil {
 		// TODO: логирование
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
@@ -106,39 +109,11 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 
 func deleteAllUsers(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	if err := database.DeleteAllUsers(); err != nil {
+	err := database.DeleteAllUsers()
+	if err != nil {
 		// TODO: логирование
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
 		w.WriteHeader(http.StatusOK)
-	}
-}
-
-// OTHER FEATURES:
-
-// TODO: дублирование функционала. Исправить.
-func assignUserTo(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	userId, err := primitive.ObjectIDFromHex(vars["id"])
-	if err != nil {
-		// TODO: логирование
-		w.WriteHeader(http.StatusNotFound)
-	}
-	planId, err := primitive.ObjectIDFromHex(vars["planId"])
-	if err != nil {
-		// TODO: логирование
-		w.WriteHeader(http.StatusBadRequest)
-	}
-	if id, err := database.CreateAssignmentByUserAndPlanIds(userId, planId); err != nil {
-		// TODO: логирование
-		w.WriteHeader(http.StatusInternalServerError)
-	} else {
-		response := dto.ObjectCreatedDto{Id: utils.IdFromInterfaceToString(id)}
-		err = json.NewEncoder(w).Encode(response)
-		if err != nil {
-			// TODO: логирование
-			w.WriteHeader(http.StatusInternalServerError)
-		}
-		w.WriteHeader(http.StatusCreated)
 	}
 }

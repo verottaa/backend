@@ -28,3 +28,11 @@ func IdFromInterfaceToString(int interface{}) string {
 	}
 	return r.FindString(str)
 }
+
+func ParseTime(s string) time.Time {
+	result, err := time.Parse(time.RFC822, s)
+	if err != nil {
+
+	}
+	return result
+}
