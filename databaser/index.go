@@ -2,6 +2,7 @@ package databaser
 
 import (
 	"context"
+	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -79,7 +80,12 @@ func initDatabaser() *databaser {
 	var err error
 	db.client, err = mongo.NewClient(options.Client().ApplyURI(configuration.GetDatabaseHost()))
 	if err != nil {
-		// TODO: логирование
+		log.WithFields(log.Fields{
+			"package":  "databaser",
+			"function": "initDatabaser",
+			"error":    err,
+			"cause":    "initialisation new mongo client",
+		}).Error("Unexpected error")
 	}
 
 	db.userCollection_ = users.GetUserCollection(database)
@@ -92,12 +98,22 @@ func initDatabaser() *databaser {
 func database(ctx context.Context) *mongo.Database {
 	err := instance.client.Connect(ctx)
 	if err != nil {
-		// TODO: логирование
+		log.WithFields(log.Fields{
+			"package":  "databaser",
+			"function": "database",
+			"error":    err,
+			"cause":    "Trying to connect with client to mongo",
+		}).Error("Unexpected error")
 	}
 
 	err = instance.client.Ping(ctx, nil)
 	if err != nil {
-		// TODO: логирование
+		log.WithFields(log.Fields{
+			"package":  "databaser",
+			"function": "database",
+			"error":    err,
+			"cause":    "Trying to ping mongo client",
+		}).Error("Unexpected error")
 	}
 	return instance.client.Database(constants.DatabaseName)
 }
@@ -203,7 +219,12 @@ func (d databaser) DeleteAllPlans() error {
 func (d databaser) CreateStepInPlan(planId primitive.ObjectID, step plansModel.Step) (interface{}, error) {
 	plan, err := d.ReadPlanById(planId)
 	if err != nil {
-		// TODO: logger
+		log.WithFields(log.Fields{
+			"package":  "databaser",
+			"function": "CreateStepInPlan",
+			"error":    err,
+			"cause":    "read plan by id",
+		}).Error("Unexpected error")
 		return nil, err
 	}
 	var stepId = utils.NewObjectId()
@@ -211,7 +232,12 @@ func (d databaser) CreateStepInPlan(planId primitive.ObjectID, step plansModel.S
 	plan.AddStep(step)
 	err = d.UpdatePlan(planId, plan)
 	if err != nil {
-		//TODO: logger
+		log.WithFields(log.Fields{
+			"package":  "databaser",
+			"function": "CreateStepInPlan",
+			"error":    err,
+			"cause":    "updating plan",
+		}).Error("Unexpected error")
 		return nil, err
 	}
 	return stepId, err
@@ -220,7 +246,12 @@ func (d databaser) CreateStepInPlan(planId primitive.ObjectID, step plansModel.S
 func (d databaser) ReadAllStepsInPlan(planId primitive.ObjectID) ([]plansModel.Step, error) {
 	plan, err := d.ReadPlanById(planId)
 	if err != nil {
-		// TODO: logger
+		log.WithFields(log.Fields{
+			"package":  "databaser",
+			"function": "ReadAllStepsInPlan",
+			"error":    err,
+			"cause":    "read plan by id",
+		}).Error("Unexpected error")
 		return nil, err
 	}
 	return plan.Steps, nil
@@ -229,12 +260,22 @@ func (d databaser) ReadAllStepsInPlan(planId primitive.ObjectID) ([]plansModel.S
 func (d databaser) ReadStepByIdInPlan(planId primitive.ObjectID, stepId primitive.ObjectID) (plansModel.Step, error) {
 	plan, err := d.ReadPlanById(planId)
 	if err != nil {
-		// TODO: logger
+		log.WithFields(log.Fields{
+			"package":  "databaser",
+			"function": "ReadStepByIdInPlan",
+			"error":    err,
+			"cause":    "read plan by id",
+		}).Error("Unexpected error")
 		return plansModel.Step{}, err
 	}
 	step, err := plan.GetStepById(stepId)
 	if err != nil {
-		// TODO: logger
+		log.WithFields(log.Fields{
+			"package":  "databaser",
+			"function": "ReadStepByIdInPlan",
+			"error":    err,
+			"cause":    "getting step from plan by id",
+		}).Error("Unexpected error")
 		return plansModel.Step{}, err
 	}
 	return step, nil
@@ -243,17 +284,32 @@ func (d databaser) ReadStepByIdInPlan(planId primitive.ObjectID, stepId primitiv
 func (d databaser) UpdateStepInPlan(planId primitive.ObjectID, stepId primitive.ObjectID, updatedStep plansModel.Step) error {
 	plan, err := d.ReadPlanById(planId)
 	if err != nil {
-		// TODO: logger
+		log.WithFields(log.Fields{
+			"package":  "databaser",
+			"function": "UpdateStepInPlan",
+			"error":    err,
+			"cause":    "read plan by id",
+		}).Error("Unexpected error")
 		return err
 	}
 	err = plan.UpdateStep(stepId, updatedStep)
 	if err != nil {
-		// TODO: logger
+		log.WithFields(log.Fields{
+			"package":  "databaser",
+			"function": "UpdateStepInPlan",
+			"error":    err,
+			"cause":    "update step",
+		}).Error("Unexpected error")
 		return err
 	}
 	err = d.UpdatePlan(planId, plan)
 	if err != nil {
-		//TODO: logger
+		log.WithFields(log.Fields{
+			"package":  "databaser",
+			"function": "UpdateStepInPlan",
+			"error":    err,
+			"cause":    "updating plan",
+		}).Error("Unexpected error")
 		return err
 	}
 	return nil
@@ -262,17 +318,32 @@ func (d databaser) UpdateStepInPlan(planId primitive.ObjectID, stepId primitive.
 func (d databaser) DeleteStepInPlan(planId primitive.ObjectID, stepId primitive.ObjectID) error {
 	plan, err := d.ReadPlanById(planId)
 	if err != nil {
-		// TODO: logger
+		log.WithFields(log.Fields{
+			"package":  "databaser",
+			"function": "DeleteStepInPlan",
+			"error":    err,
+			"cause":    "reading plan by id",
+		}).Error("Unexpected error")
 		return err
 	}
 	err = plan.RemoveStep(stepId)
 	if err != nil {
-		// TODO: logger
+		log.WithFields(log.Fields{
+			"package":  "databaser",
+			"function": "DeleteStepInPlan",
+			"error":    err,
+			"cause":    "removing step from plan",
+		}).Error("Unexpected error")
 		return err
 	}
 	err = d.UpdatePlan(planId, plan)
 	if err != nil {
-		//TODO: logger
+		log.WithFields(log.Fields{
+			"package":  "databaser",
+			"function": "DeleteStepInPlan",
+			"error":    err,
+			"cause":    "updating plan",
+		}).Error("Unexpected error")
 		return err
 	}
 	return nil
@@ -281,13 +352,23 @@ func (d databaser) DeleteStepInPlan(planId primitive.ObjectID, stepId primitive.
 func (d databaser) DeleteAllStepsInPlan(planId primitive.ObjectID) error {
 	plan, err := d.ReadPlanById(planId)
 	if err != nil {
-		// TODO: logger
+		log.WithFields(log.Fields{
+			"package":  "databaser",
+			"function": "DeleteAllStepsInPlan",
+			"error":    err,
+			"cause":    "read plan by id",
+		}).Error("Unexpected error")
 		return err
 	}
 	plan.RemoveAllSteps()
 	err = d.UpdatePlan(planId, plan)
 	if err != nil {
-		//TODO: logger
+		log.WithFields(log.Fields{
+			"package":  "databaser",
+			"function": "DeleteAllStepsInPlan",
+			"error":    err,
+			"cause":    "updating plan",
+		}).Error("Unexpected error")
 		return err
 	}
 	return nil

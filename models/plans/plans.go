@@ -2,6 +2,7 @@ package plans
 
 import (
 	"errors"
+	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -44,7 +45,12 @@ func (p *Plan) AddStep(step Step) {
 func (p *Plan) RemoveStep(id primitive.ObjectID) error {
 	var index, _, err = p.findStepIndexById(id)
 	if err != nil {
-		// TODO: логирование
+		log.WithFields(log.Fields{
+			"package":  "plans",
+			"function": "RemoveStep",
+			"error":    err,
+			"cause":    "Removing step",
+		}).Error("Unexpected error")
 		return err
 	}
 	p.Steps = append(p.Steps[:index], p.Steps[index+1:]...)
@@ -60,7 +66,12 @@ func (p *Plan) RemoveAllSteps() {
 func (p *Plan) UpdateStep(id primitive.ObjectID, step Step) error {
 	var index, _, err = p.findStepIndexById(id)
 	if err != nil {
-		// TODO: логирование
+		log.WithFields(log.Fields{
+			"package":  "plans",
+			"function": "UpdateStep",
+			"error":    err,
+			"cause":    "finding step index",
+		}).Error("Unexpected error")
 		return err
 	}
 	step.Id = id
@@ -76,7 +87,12 @@ func (p *Plan) GetSteps() []Step {
 func (p *Plan) GetStepById(id primitive.ObjectID) (Step, error) {
 	var _, step, err = p.findStepIndexById(id)
 	if err != nil {
-		// TODO: логирование
+		log.WithFields(log.Fields{
+			"package":  "plans",
+			"function": "GetStepById",
+			"error":    err,
+			"cause":    "finding step by id",
+		}).Error("Unexpected error")
 		return step, err
 	}
 	return step, nil

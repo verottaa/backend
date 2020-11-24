@@ -3,6 +3,7 @@ package auth
 import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"time"
 	"verottaa/constants"
@@ -22,6 +23,11 @@ func signInHandler(w http.ResponseWriter, _ *http.Request) {
 
 	_, err := w.Write([]byte(tokenString))
 	if err != nil {
-		// TODO: логирование
+		log.WithFields(log.Fields{
+			"package":  "auth",
+			"function": "signInHandler",
+			"error":    err,
+			"cause":    "writing bytes",
+		}).Error("Unexpected error")
 	}
 }

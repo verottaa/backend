@@ -2,6 +2,7 @@ package plans
 
 import (
 	"context"
+	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -91,7 +92,12 @@ func (c planController) Create(plan plans.Plan) (interface{}, error) {
 
 	res, err := c.getCollection(ctx).InsertOne(ctx, insert)
 	if err != nil {
-		// TODO: логирование
+		log.WithFields(log.Fields{
+			"package":  "assignments",
+			"function": "Create",
+			"error":    err,
+			"cause":    "inserting plan to database",
+		}).Error("Unexpected error")
 		return nil, err
 	}
 	return res.InsertedID, nil

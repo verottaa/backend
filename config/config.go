@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
 	"sync"
@@ -75,7 +76,12 @@ func createDefaultConfig() *config {
 func createConfig() *config {
 	file, err := ioutil.ReadFile("config.json")
 	if err != nil {
-		// TODO: логирование
+		log.WithFields(log.Fields{
+			"package":  "config",
+			"function": "createConfig",
+			"error":    err,
+			"cause":    "ReadFile",
+		}).Error("Unexpected error")
 		conf := createDefaultConfig()
 		writeConfigInFile(conf)
 		return conf
@@ -84,7 +90,12 @@ func createConfig() *config {
 	instance := config{}
 	err = json.Unmarshal(file, &instance)
 	if err != nil {
-		// TODO: логирование
+		log.WithFields(log.Fields{
+			"package":  "config",
+			"function": "createConfig",
+			"error":    err,
+			"cause":    "Unmarshalling",
+		}).Error("Unexpected error")
 		conf := createDefaultConfig()
 		writeConfigInFile(conf)
 		return conf
@@ -95,15 +106,38 @@ func createConfig() *config {
 
 func writeConfigInFile(config *config) {
 	jsonString, err := json.Marshal(config)
-	// TODO: логирование
+	log.WithFields(log.Fields{
+		"package":  "config",
+		"function": "writeConfigInFile",
+		"error":    err,
+		"cause":    "Marshalling",
+	}).Error("Unexpected error")
+
 	file, err := os.Create("config.json")
-	// TODO: логирование
+	log.WithFields(log.Fields{
+		"package":  "config",
+		"function": "writeConfigInFile",
+		"error":    err,
+		"cause":    "Creating config file",
+	}).Error("Unexpected error")
+
 	defer func() {
 		err = file.Close()
-		// TODO: логирование
+		log.WithFields(log.Fields{
+			"package":  "config",
+			"function": "writeConfigInFile",
+			"error":    err,
+			"cause":    "File cannot close",
+		}).Error("Unexpected error")
 	}()
+
 	_, err = file.Write(jsonString)
-	// TODO: логирование
+	log.WithFields(log.Fields{
+		"package":  "config",
+		"function": "writeConfigInFile",
+		"error":    err,
+		"cause":    "Cannot write file",
+	}).Error("Unexpected error")
 }
 
 func (c config) Destroy() {
