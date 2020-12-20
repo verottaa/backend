@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	user_module "github.com/verottaa/user-module"
 	"mime"
 	"net/http"
 	"os"
@@ -78,7 +79,7 @@ func initStopChan() chan os.Signal {
 
 func initControllers(router *mux.Router) {
 	router.StrictSlash(true).HandleFunc("/", statusApi).Methods("GET")
-	controllers.UserRouter(router.PathPrefix(constants.UsersRoute).Subrouter())
+	user_module.RegistryControllers(router.PathPrefix(constants.UsersRoute).Subrouter())
 	controllers.PlansRouter(router.PathPrefix(constants.PlansRoute).Subrouter())
 	controllers.AssignmentsRouter(router.PathPrefix(constants.AssignmentsRoute).Subrouter())
 	controllers.AuthRouter(router.PathPrefix(constants.AuthRoute).Subrouter())

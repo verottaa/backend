@@ -11,11 +11,9 @@ import (
 	"verottaa/constants"
 	"verottaa/databaser/assignments"
 	"verottaa/databaser/plans"
-	"verottaa/databaser/users"
 	"verottaa/models"
 	assignmentModel "verottaa/models/assignments"
 	plansModel "verottaa/models/plans"
-	userModel "verottaa/models/users"
 	"verottaa/utils"
 )
 
@@ -23,25 +21,14 @@ var configuration = config.GetConfiguration()
 
 type databaser struct {
 	client                *mongo.Client
-	userCollection_       users.UserCollection
 	planCollection_       plans.PlanCollection
 	assignmentCollection_ assignments.AssignmentCollection
 }
 
 type DB interface {
 	models.Destroyable
-	UsersCollection
 	PlansCollection
 	AssignmentsCollection
-}
-
-type UsersCollection interface {
-	CreateUser(userModel.User) (interface{}, error)
-	ReadAllUsers() ([]userModel.User, error)
-	ReadUserById(primitive.ObjectID) (userModel.User, error)
-	UpdateUser(primitive.ObjectID, userModel.User) error
-	DeleteUserById(primitive.ObjectID) error
-	DeleteAllUsers() error
 }
 
 type PlansCollection interface {
@@ -88,7 +75,6 @@ func initDatabaser() *databaser {
 		}).Error("Unexpected error")
 	}
 
-	db.userCollection_ = users.GetUserCollection(database)
 	db.planCollection_ = plans.GetPlanCollection(database)
 	db.assignmentCollection_ = assignments.GetPlanCollection(database)
 
@@ -139,13 +125,8 @@ func GetDatabaser() DB {
 func (d databaser) Destroy() {
 	destroyCh <- true
 	close(destroyCh)
-	instance.userCollection().Destroy()
 	instance.planCollection().Destroy()
 	instance = nil
-}
-
-func (d databaser) userCollection() users.UserCollection {
-	return d.userCollection_
 }
 
 func (d databaser) planCollection() plans.PlanCollection {
@@ -154,34 +135,6 @@ func (d databaser) planCollection() plans.PlanCollection {
 
 func (d databaser) assignmentCollection() assignments.AssignmentCollection {
 	return d.assignmentCollection_
-}
-
-//
-//	USERS
-//
-
-func (d databaser) CreateUser(user userModel.User) (interface{}, error) {
-	return d.userCollection().Create(user)
-}
-
-func (d databaser) ReadAllUsers() ([]userModel.User, error) {
-	return d.userCollection().ReadAll()
-}
-
-func (d databaser) ReadUserById(id primitive.ObjectID) (userModel.User, error) {
-	return d.userCollection().ReadById(id)
-}
-
-func (d databaser) UpdateUser(id primitive.ObjectID, user userModel.User) error {
-	return d.userCollection().Update(id, user)
-}
-
-func (d databaser) DeleteUserById(id primitive.ObjectID) error {
-	return d.userCollection().DeleteById(id)
-}
-
-func (d databaser) DeleteAllUsers() error {
-	return d.userCollection().DeleteAll()
 }
 
 //
