@@ -5,13 +5,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 	"verottaa/controllers/controller_helpers"
-	"verottaa/databaser"
 	"verottaa/models/dto"
 	"verottaa/models/plans"
 	"verottaa/utils"
 )
 
-var db = databaser.GetDatabaser()
 var variableReader = controller_helpers.GetVariableReader()
 
 type Assignable interface {
@@ -33,7 +31,7 @@ type Assignment struct {
 	CurrentStepId    primitive.ObjectID `json:"current_step_id" bson:"current_step_id"`
 }
 
-func (a *Assignment) RecalculateEndDates() {
+/*func (a *Assignment) RecalculateEndDates() {
 
 	plan, err := db.ReadPlanById(a.PlanId)
 	if err != nil {
@@ -42,7 +40,7 @@ func (a *Assignment) RecalculateEndDates() {
 
 	a.RecalculatePlannedEndDate(plan)
 	a.RecalculateFactEndDate(plan)
-}
+}*/
 
 func (a *Assignment) RecalculatePlannedEndDate(plan plans.Plan) {
 	a.PlannedEndDate = a.PlannedStartDate.Add(time.Hour * 24 * time.Duration(plan.Period))
@@ -52,7 +50,7 @@ func (a *Assignment) RecalculateFactEndDate(plan plans.Plan) {
 	a.FactEndDate = a.FactStartDate.Add(time.Hour * 24 * time.Duration(plan.Period))
 }
 
-func (a *Assignment) SetCurrentStepWithIndex(index int) {
+/*func (a *Assignment) SetCurrentStepWithIndex(index int) {
 
 	plan, err := db.ReadPlanById(a.PlanId)
 	if err != nil {
@@ -63,7 +61,7 @@ func (a *Assignment) SetCurrentStepWithIndex(index int) {
 		id := plan.Steps[index].Id
 		a.CurrentStepId = id
 	}
-}
+}*/
 
 func NewAssignment(assignDto dto.AssignCreateDto) Assignment {
 	// TODO: сделать назначение куратора
@@ -72,14 +70,14 @@ func NewAssignment(assignDto dto.AssignCreateDto) Assignment {
 		PlanId:           variableReader.GetObjectIDFromString(assignDto.PlanId),
 		CuratorId:        variableReader.GetObjectIDFromString(assignDto.CuratorId),
 		PlannedStartDate: utils.ParseTime(assignDto.StartDate),
-		PlannedEndDate:   nil,
+		PlannedEndDate:   utils.ParseTime(assignDto.StartDate),
 		FactStartDate:    utils.ParseTime(assignDto.StartDate),
-		FactEndDate:      nil,
+		FactEndDate:    utils.ParseTime(assignDto.StartDate),
 		CurrentStepId:    primitive.ObjectID{},
 	}
 
-	assignment.RecalculateEndDates()
-	assignment.SetCurrentStepWithIndex(0)
+	/*assignment.RecalculateEndDates()
+	assignment.SetCurrentStepWithIndex(0)*/
 
 	return assignment
 }
