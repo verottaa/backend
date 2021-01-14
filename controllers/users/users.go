@@ -1,6 +1,7 @@
 package users
 
 import (
+	"encoding/json"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"net/http"
@@ -21,13 +22,11 @@ func Router(router *mux.Router) {
 }
 
 var database = databaser.GetDatabaser()
-var variableReader = controller_helpers.GetVariableReader()
-var jsonWorker = controller_helpers.GetJsonWorker()
 
 func createUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var user users.User
-	err := jsonWorker.Decode(r, user)
+	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"package":  "users",
@@ -49,7 +48,7 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(http.StatusCreated)
 		response := dto.ObjectCreatedDto{Id: utils.IdFromInterfaceToString(id)}
-		err = jsonWorker.Encode(w, response)
+		err = json.NewEncoder(w).Encode(response)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"package":  "users",
@@ -74,7 +73,7 @@ func getUsers(w http.ResponseWriter, _ *http.Request) {
 		}).Error("Unexpected error")
 		w.WriteHeader(http.StatusNotFound)
 	} else {
-		err = jsonWorker.Encode(w, allUsers)
+		err = json.NewEncoder(w).Encode(allUsers)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"package":  "users",
@@ -88,6 +87,7 @@ func getUsers(w http.ResponseWriter, _ *http.Request) {
 }
 
 func getUserById(w http.ResponseWriter, r *http.Request) {
+	var variableReader = controller_helpers.GetVariableReader()
 	w.Header().Set("Content-Type", "application/json")
 	id := variableReader.GetObjectIdFromQueryByName(r, "id")
 	user, err := database.ReadUserById(id)
@@ -100,7 +100,7 @@ func getUserById(w http.ResponseWriter, r *http.Request) {
 		}).Error("Unexpected error")
 		w.WriteHeader(http.StatusNotFound)
 	} else {
-		err = jsonWorker.Encode(w, user)
+		err = json.NewEncoder(w).Encode(user)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"package":  "users",
@@ -114,10 +114,11 @@ func getUserById(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateUser(w http.ResponseWriter, r *http.Request) {
+	var variableReader = controller_helpers.GetVariableReader()
 	w.Header().Set("Content-Type", "application/json")
 	id := variableReader.GetObjectIdFromQueryByName(r, "id")
 	var user users.User
-	err := jsonWorker.Decode(r, user)
+	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"package":  "users",
@@ -142,6 +143,7 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteUser(w http.ResponseWriter, r *http.Request) {
+	var variableReader = controller_helpers.GetVariableReader()
 	w.Header().Set("Content-Type", "application/json")
 	id := variableReader.GetObjectIdFromQueryByName(r, "id")
 	err := database.DeleteUserById(id)

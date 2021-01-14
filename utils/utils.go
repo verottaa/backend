@@ -16,8 +16,7 @@ func NewObjectId() primitive.ObjectID {
 }
 
 func GetContext() context.Context {
-	ctx, _ := context.WithTimeout(globalContext, 5*time.Second)
-	return ctx
+	return globalContext
 }
 
 func IdFromInterfaceToString(int interface{}) string {

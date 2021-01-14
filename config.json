@@ -1,6 +1,6 @@
 {
   "port": ":8080",
   "database": {
-    "host": "mongodb://localhost:27017"
+    "host": "mongodb+srv://user:LpYBYwkuD7Fcn3M@cluster.uvcwv.mongodb.net/test"
   }
 }

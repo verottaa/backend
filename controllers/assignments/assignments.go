@@ -1,6 +1,7 @@
 package assignments
 
 import (
+	"encoding/json"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"net/http"
@@ -21,14 +22,12 @@ func Router(router *mux.Router) {
 }
 
 var database = databaser.GetDatabaser()
-var variableReader = controller_helpers.GetVariableReader()
-var jsonWorker = controller_helpers.GetJsonWorker()
 
 func Assign(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var assignDto dto.AssignCreateDto
-	err := jsonWorker.Decode(r, assignDto)
+	err := json.NewDecoder(r.Body).Decode(&assignDto)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"package":  "assignments",
@@ -52,7 +51,7 @@ func Assign(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(http.StatusCreated)
 		response := dto.ObjectCreatedDto{Id: utils.IdFromInterfaceToString(id)}
-		err = jsonWorker.Encode(w, response)
+		err = json.NewEncoder(w).Encode(response)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"package":  "assignments",
@@ -77,7 +76,7 @@ func getAssignments(w http.ResponseWriter, _ *http.Request) {
 		}).Error("Unexpected error")
 		w.WriteHeader(http.StatusNotFound)
 	} else {
-		err = jsonWorker.Encode(w, allAssignments)
+		err = json.NewEncoder(w).Encode(allAssignments)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"package":  "assignments",
@@ -91,6 +90,7 @@ func getAssignments(w http.ResponseWriter, _ *http.Request) {
 }
 
 func getAssignmentById(w http.ResponseWriter, r *http.Request) {
+	var variableReader = controller_helpers.GetVariableReader()
 	w.Header().Set("Content-Type", "application/json")
 	id := variableReader.GetObjectIdFromQueryByName(r, "id")
 	assignment, err := database.ReadAssignmentById(id)
@@ -103,7 +103,7 @@ func getAssignmentById(w http.ResponseWriter, r *http.Request) {
 		}).Error("Unexpected error")
 		w.WriteHeader(http.StatusNotFound)
 	} else {
-		err = jsonWorker.Encode(w, assignment)
+		err = json.NewEncoder(w).Encode(assignment)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"package":  "assignments",
@@ -117,10 +117,11 @@ func getAssignmentById(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateAssignment(w http.ResponseWriter, r *http.Request) {
+	var variableReader = controller_helpers.GetVariableReader()
 	w.Header().Set("Content-Type", "application/json")
 	id := variableReader.GetObjectIdFromQueryByName(r, "id")
 	var assignment assignments.Assignment
-	err := jsonWorker.Decode(r, assignment)
+	err := json.NewDecoder(r.Body).Decode(&assignment)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"package":  "assignments",
@@ -144,6 +145,7 @@ func updateAssignment(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteAssignment(w http.ResponseWriter, r *http.Request) {
+	var variableReader = controller_helpers.GetVariableReader()
 	w.Header().Set("Content-Type", "application/json")
 	id := variableReader.GetObjectIdFromQueryByName(r, "id")
 	err := database.DeleteAssignmentById(id)

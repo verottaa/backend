@@ -1,9 +1,11 @@
 package plans
 
 import (
+	"encoding/json"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"net/http"
+	"verottaa/controllers/controller_helpers"
 	"verottaa/models/dto"
 	"verottaa/models/plans"
 	"verottaa/utils"
@@ -19,10 +21,11 @@ func StepsRouter(router *mux.Router) {
 }
 
 func createStep(w http.ResponseWriter, r *http.Request) {
+	var variableReader = controller_helpers.GetVariableReader()
 	w.Header().Set("Content-Type", "application/json")
 	id := variableReader.GetObjectIdFromQueryByName(r, "id")
 	var step plans.Step
-	err := jsonWorker.Decode(r, step)
+	err := json.NewDecoder(r.Body).Decode(&step)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"package":  "plans",
@@ -44,7 +47,7 @@ func createStep(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(http.StatusCreated)
 		response := dto.ObjectCreatedDto{Id: utils.IdFromInterfaceToString(createdId)}
-		err = jsonWorker.Encode(w, response)
+		err = json.NewEncoder(w).Encode(response)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"package":  "plans",
@@ -58,6 +61,7 @@ func createStep(w http.ResponseWriter, r *http.Request) {
 }
 
 func getAllSteps(w http.ResponseWriter, r *http.Request) {
+	var variableReader = controller_helpers.GetVariableReader()
 	w.Header().Set("Content-Type", "application/json")
 	id := variableReader.GetObjectIdFromQueryByName(r, "id")
 	steps, err := database.ReadAllStepsInPlan(id)
@@ -70,7 +74,7 @@ func getAllSteps(w http.ResponseWriter, r *http.Request) {
 		}).Error("Unexpected error")
 		w.WriteHeader(http.StatusNotFound)
 	} else {
-		err = jsonWorker.Encode(w, steps)
+		err = json.NewEncoder(w).Encode(steps)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"package":  "plans",
@@ -84,6 +88,7 @@ func getAllSteps(w http.ResponseWriter, r *http.Request) {
 }
 
 func getStepById(w http.ResponseWriter, r *http.Request) {
+	var variableReader = controller_helpers.GetVariableReader()
 	w.Header().Set("Content-Type", "application/json")
 	id := variableReader.GetObjectIdFromQueryByName(r, "id")
 	stepId := variableReader.GetObjectIdFromQueryByName(r, "stepId")
@@ -97,7 +102,7 @@ func getStepById(w http.ResponseWriter, r *http.Request) {
 		}).Error("Unexpected error")
 		w.WriteHeader(http.StatusNotFound)
 	} else {
-		err = jsonWorker.Encode(w, step)
+		err = json.NewEncoder(w).Encode(step)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"package":  "plans",
@@ -111,11 +116,12 @@ func getStepById(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateStepById(w http.ResponseWriter, r *http.Request) {
+	var variableReader = controller_helpers.GetVariableReader()
 	w.Header().Set("Content-Type", "application/json")
 	id := variableReader.GetObjectIdFromQueryByName(r, "id")
 	stepId := variableReader.GetObjectIdFromQueryByName(r, "stepId")
 	var step plans.Step
-	err := jsonWorker.Decode(r, step)
+	err := json.NewDecoder(r.Body).Decode(&step)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"package":  "plans",
@@ -140,6 +146,7 @@ func updateStepById(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteStepById(w http.ResponseWriter, r *http.Request) {
+	var variableReader = controller_helpers.GetVariableReader()
 	w.Header().Set("Content-Type", "application/json")
 	id := variableReader.GetObjectIdFromQueryByName(r, "id")
 	stepId := variableReader.GetObjectIdFromQueryByName(r, "stepId")
@@ -158,6 +165,7 @@ func deleteStepById(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteAllSteps(w http.ResponseWriter, r *http.Request) {
+	var variableReader = controller_helpers.GetVariableReader()
 	id := variableReader.GetObjectIdFromQueryByName(r, "id")
 	w.Header().Set("Content-Type", "application/json")
 	err := database.DeleteAllStepsInPlan(id)

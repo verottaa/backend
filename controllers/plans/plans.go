@@ -1,6 +1,7 @@
 package plans
 
 import (
+	"encoding/json"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"net/http"
@@ -26,13 +27,11 @@ func PlansRouter(router *mux.Router) {
 }
 
 var database = databaser.GetDatabaser()
-var variableReader = controller_helpers.GetVariableReader()
-var jsonWorker = controller_helpers.GetJsonWorker()
 
 func createPlan(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var plan plans.Plan
-	err := jsonWorker.Decode(r, plan)
+	err := json.NewDecoder(r.Body).Decode(&plan)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"package":  "plans",
@@ -53,7 +52,7 @@ func createPlan(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
 		response := dto.ObjectCreatedDto{Id: utils.IdFromInterfaceToString(id)}
-		err = jsonWorker.Encode(w, response)
+		err = json.NewEncoder(w).Encode(response)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"package":  "plans",
@@ -79,7 +78,7 @@ func getPlans(w http.ResponseWriter, _ *http.Request) {
 		}).Error("Unexpected error")
 		w.WriteHeader(http.StatusNotFound)
 	} else {
-		err = jsonWorker.Encode(w, allPlans)
+		err = json.NewEncoder(w).Encode(allPlans)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"package":  "plans",
@@ -93,6 +92,7 @@ func getPlans(w http.ResponseWriter, _ *http.Request) {
 }
 
 func getPlanById(w http.ResponseWriter, r *http.Request) {
+	var variableReader = controller_helpers.GetVariableReader()
 	w.Header().Set("Content-Type", "application/json")
 	id := variableReader.GetObjectIdFromQueryByName(r, "id")
 	plan, err := database.ReadPlanById(id)
@@ -105,7 +105,7 @@ func getPlanById(w http.ResponseWriter, r *http.Request) {
 		}).Error("Unexpected error")
 		w.WriteHeader(http.StatusNotFound)
 	} else {
-		err = jsonWorker.Encode(w, plan)
+		err = json.NewEncoder(w).Encode(plan)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"package":  "plans",
@@ -119,10 +119,11 @@ func getPlanById(w http.ResponseWriter, r *http.Request) {
 }
 
 func updatePlan(w http.ResponseWriter, r *http.Request) {
+	var variableReader = controller_helpers.GetVariableReader()
 	w.Header().Set("Content-Type", "application/json")
 	id := variableReader.GetObjectIdFromQueryByName(r, "id")
 	var plan plans.Plan
-	err := jsonWorker.Decode(r, plan)
+	err := json.NewDecoder(r.Body).Decode(&plan)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"package":  "plans",
@@ -147,6 +148,7 @@ func updatePlan(w http.ResponseWriter, r *http.Request) {
 }
 
 func deletePlan(w http.ResponseWriter, r *http.Request) {
+	var variableReader = controller_helpers.GetVariableReader()
 	w.Header().Set("Content-Type", "application/json")
 	id := variableReader.GetObjectIdFromQueryByName(r, "id")
 	err := database.DeletePlanById(id)
