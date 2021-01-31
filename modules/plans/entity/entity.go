@@ -2,13 +2,15 @@ package entity
 
 import (
 	"errors"
+	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Plan struct {
-	Id     primitive.ObjectID `json:"id" bson:"_id"`
-	Steps  []Step             `json:"steps" bson:"steps"`
-	Period int                `json:"period" bson:"period"`
+	mgm.DefaultModel `bson:",inline"`
+	Id               primitive.ObjectID `json:"id" bson:"_id"`
+	Steps            []Step             `json:"steps" bson:"steps"`
+	Period           int                `json:"period" bson:"period"`
 }
 
 type PlanFilters struct {

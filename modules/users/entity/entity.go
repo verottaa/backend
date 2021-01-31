@@ -1,8 +1,12 @@
 package entity
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"github.com/kamva/mgm/v3"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type User struct {
+	mgm.DefaultModel `bson:",inline"`
 	Id         primitive.ObjectID `json:"id" bson:"_id"`
 	Name       string             `json:"name" bson:"name"`
 	Surname    string             `json:"surname" bson:"surname"`
