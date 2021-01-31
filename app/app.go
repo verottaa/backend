@@ -84,7 +84,6 @@ func initControllers(router *mux.Router) {
 	users.RegistryControllers(router.PathPrefix(constants.UsersRoute).Subrouter())
 	plans.RegistryControllers(router.PathPrefix(constants.PlansRoute).Subrouter())
 	controllers.AssignmentsRouter(router.PathPrefix(constants.AssignmentsRoute).Subrouter())
-	controllers.AuthRouter(router.PathPrefix(constants.AuthRoute).Subrouter())
 }
 
 func statusApi(w http.ResponseWriter, _ *http.Request) {
