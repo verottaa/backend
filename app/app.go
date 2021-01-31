@@ -15,6 +15,7 @@ import (
 	"verottaa/config"
 	"verottaa/constants"
 	"verottaa/controllers"
+	_ "verottaa/modules/database"
 	"verottaa/modules/plans"
 	"verottaa/modules/users"
 )

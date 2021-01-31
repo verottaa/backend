@@ -4,6 +4,7 @@ import (
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
+	"sync"
 	"verottaa/models"
 )
 
@@ -23,6 +24,8 @@ type IdReader interface {
 
 var variableReaderDestroyCh = make(chan bool)
 var variableReaderInstance *variableReader
+
+var once sync.Once
 
 func GetVariableReader() VariableReader {
 	once.Do(func() {
