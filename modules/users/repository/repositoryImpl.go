@@ -77,6 +77,7 @@ func (r repository) FindAll() ([]entity.User, error) {
 }
 
 func (r repository) Update(id primitive.ObjectID, user *entity.User) error {
+	// TODO: найти способ починить ошибку апдейта
 	filters := entity.UserFilters{Id: id}
 	_, err := mgm.Coll(user).UpdateOne(mgm.Ctx(), filters, user)
 	return err
