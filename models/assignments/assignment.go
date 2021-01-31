@@ -72,7 +72,7 @@ func NewAssignment(assignDto dto.AssignCreateDto) Assignment {
 		PlannedStartDate: utils.ParseTime(assignDto.StartDate),
 		PlannedEndDate:   utils.ParseTime(assignDto.StartDate),
 		FactStartDate:    utils.ParseTime(assignDto.StartDate),
-		FactEndDate:    utils.ParseTime(assignDto.StartDate),
+		FactEndDate:      utils.ParseTime(assignDto.StartDate),
 		CurrentStepId:    primitive.ObjectID{},
 	}
 

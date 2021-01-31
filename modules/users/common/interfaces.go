@@ -7,11 +7,11 @@ import (
 
 type Reader interface {
 	Find(id primitive.ObjectID) (*entity.User, error)
-	FindAll() ([]*entity.User, error)
+	FindAll() ([]entity.User, error)
 }
 
 type Writer interface {
-	Update(user *entity.User) error
+	Update(id primitive.ObjectID, user *entity.User) error
 	Store(user *entity.User) (primitive.ObjectID, error)
 	Delete(id primitive.ObjectID) error
 	DeleteMany(filter entity.UserFilters) (int64, error)

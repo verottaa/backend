@@ -13,7 +13,7 @@ type Reader interface {
 }
 
 type Writer interface {
-	Update(user *entity.Plan) error
+	Update(id primitive.ObjectID, user *entity.Plan) error
 	Store(user *entity.Plan) (primitive.ObjectID, error)
 	Delete(id primitive.ObjectID) error
 	DeleteMany(filter entity.PlanFilters) (int64, error)

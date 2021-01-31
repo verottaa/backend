@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -50,7 +49,7 @@ func (c controller) createOne(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
 		w.WriteHeader(http.StatusCreated)
-		response := common.ObjectCreatedDto{Id: id.String()}
+		response := common.ObjectCreatedDto{Id: id}
 		err = c.jsonWorker.Encode(w, response)
 		if err != nil {
 			fmt.Println(err)
@@ -70,14 +69,15 @@ func (c controller) updateOne(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if id.String() != plan.Id.String() {
+	// TODO: проверка на соответствие id
+	/*if id != plan.ID {
 		var err = errors.New("validation didn't pass because plan.id and /:id not equal")
 		fmt.Println(err.Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return
-	}
+	}*/
 
-	err = c.service.Update(&plan)
+	err = c.service.Update(id, &plan)
 	if err != nil {
 		fmt.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)

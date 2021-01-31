@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -50,7 +49,7 @@ func (c controller) createOne(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
 		w.WriteHeader(http.StatusCreated)
-		response := common.ObjectCreatedDto{Id: id.String()}
+		response := common.ObjectCreatedDto{Id: id}
 		err = c.jsonWorker.Encode(w, response)
 		if err != nil {
 			fmt.Println(err)
@@ -70,14 +69,15 @@ func (c controller) updateOne(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if id.String() != user.Id.String() {
+	// TODO: проверка на соответствие id
+	/*if id != user.ID {
 		var err = errors.New("validation didn't pass because user.id and /:id not equal")
 		fmt.Println(err.Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return
-	}
+	}*/
 
-	err = c.service.Update(&user)
+	err = c.service.Update(id, &user)
 	if err != nil {
 		fmt.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
@@ -131,6 +131,7 @@ func (c controller) getOne(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c controller) getAll(w http.ResponseWriter, _ *http.Request) {
+	fmt.Println("getAll")
 	w.Header().Set("Content-Type", "application/json")
 	users, err := c.service.FindAll()
 	if err != nil {

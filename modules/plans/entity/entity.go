@@ -8,15 +8,14 @@ import (
 
 type Plan struct {
 	mgm.DefaultModel `bson:",inline"`
-	Id               primitive.ObjectID `json:"id" bson:"_id"`
-	Steps            []Step             `json:"steps" bson:"steps"`
-	Period           int                `json:"period" bson:"period"`
+	Steps  []Step `json:"steps" bson:"steps"`
+	Period int    `json:"period" bson:"period"`
 }
 
 type PlanFilters struct {
-	Id     primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-	Steps  []Step             `json:"steps,omitempty" bson:"steps,omitempty"`
-	Period int                `json:"period,omitempty" bson:"period,omitempty"`
+	//Id     primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+	Steps  []Step `json:"steps,omitempty" bson:"steps,omitempty"`
+	Period int    `json:"period,omitempty" bson:"period,omitempty"`
 }
 
 type Step struct {

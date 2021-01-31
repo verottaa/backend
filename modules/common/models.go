@@ -1,5 +1,7 @@
 package common
 
+import "go.mongodb.org/mongo-driver/bson/primitive"
+
 type ObjectCreatedDto struct {
-	Id string `json:"id"`
+	Id primitive.ObjectID `json:"id"`
 }

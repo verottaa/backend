@@ -62,11 +62,11 @@ func (r repository) FindAll() ([]*entity.Plan, error) {
 	panic("Not implemented")
 }
 
-func (r repository) Update(user *entity.Plan) error {
+func (r repository) Update(id primitive.ObjectID, plan *entity.Plan) error {
 	panic("Not implemented")
 }
 
-func (r repository) Store(user *entity.Plan) (primitive.ObjectID, error) {
+func (r repository) Store(plan *entity.Plan) (primitive.ObjectID, error) {
 	panic("Not implemented")
 }
 

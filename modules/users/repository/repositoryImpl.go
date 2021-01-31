@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"github.com/kamva/mgm/v3"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"sync"
 	"verottaa/modules/users/entity"
@@ -37,7 +39,6 @@ func GetRepository() Repository {
 
 func createRepository() *repository {
 	repo := new(repository)
-	repo.collectionName = "users"
 	return repo
 }
 
@@ -55,23 +56,44 @@ func (r repository) GetCollectionName() string {
 }
 
 func (r repository) Find(id primitive.ObjectID) (*entity.User, error) {
-	panic("Not implemented")
+	user := &entity.User{}
+	coll := mgm.Coll(user)
+	err := coll.FindByID(id, user)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
-func (r repository) FindAll() ([]*entity.User, error) {
-	panic("Not implemented")
+func (r repository) FindAll() ([]entity.User, error) {
+	user := &entity.User{}
+	var users []entity.User
+	coll := mgm.Coll(user)
+	err := coll.SimpleFind(&users, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
 }
 
-func (r repository) Update(user *entity.User) error {
-	panic("Not implemented")
+func (r repository) Update(id primitive.ObjectID, user *entity.User) error {
+	filters := entity.UserFilters{Id: id}
+	_, err := mgm.Coll(user).UpdateOne(mgm.Ctx(), filters, user)
+	return err
 }
 
 func (r repository) Store(user *entity.User) (primitive.ObjectID, error) {
-	panic("Not implemented")
+	err := mgm.Coll(user).Create(user)
+	if err != nil {
+		return user.ID, err
+	}
+	return user.ID, nil
 }
 
 func (r repository) Delete(id primitive.ObjectID) error {
-	panic("Not implemented")
+	user := &entity.User{}
+	user.SetID(id)
+	return mgm.Coll(user).Delete(user)
 }
 
 func (r repository) DeleteMany(filter entity.UserFilters) (int64, error) {
@@ -79,5 +101,11 @@ func (r repository) DeleteMany(filter entity.UserFilters) (int64, error) {
 }
 
 func (r repository) DeleteAll() (int64, error) {
-	panic("Not implemented")
+	user := &entity.User{}
+	context := mgm.Ctx()
+	deleteResult, err := mgm.Coll(user).DeleteMany(context, bson.M{})
+	if err != nil {
+		return -1, err
+	}
+	return deleteResult.DeletedCount, nil
 }

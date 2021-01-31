@@ -49,12 +49,12 @@ func (s service) Find(id primitive.ObjectID) (*entity.User, error) {
 	return s.repo.Find(id)
 }
 
-func (s service) FindAll() ([]*entity.User, error) {
+func (s service) FindAll() ([]entity.User, error) {
 	return s.repo.FindAll()
 }
 
-func (s service) Update(user *entity.User) error {
-	return s.repo.Update(user)
+func (s service) Update(id primitive.ObjectID, user *entity.User) error {
+	return s.repo.Update(id, user)
 }
 
 func (s service) Store(user *entity.User) (primitive.ObjectID, error) {
