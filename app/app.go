@@ -15,6 +15,9 @@ import (
 	"verottaa/config"
 	"verottaa/constants"
 	"verottaa/controllers"
+	_ "verottaa/modules/database"
+	"verottaa/modules/plans"
+	"verottaa/modules/users"
 )
 
 var configuration config.Configurable
@@ -78,10 +81,9 @@ func initStopChan() chan os.Signal {
 
 func initControllers(router *mux.Router) {
 	router.StrictSlash(true).HandleFunc("/", statusApi).Methods("GET")
-	controllers.UserRouter(router.PathPrefix(constants.UsersRoute).Subrouter())
-	controllers.PlansRouter(router.PathPrefix(constants.PlansRoute).Subrouter())
+	users.RegistryControllers(router.PathPrefix(constants.UsersRoute).Subrouter())
+	plans.RegistryControllers(router.PathPrefix(constants.PlansRoute).Subrouter())
 	controllers.AssignmentsRouter(router.PathPrefix(constants.AssignmentsRoute).Subrouter())
-	controllers.AuthRouter(router.PathPrefix(constants.AuthRoute).Subrouter())
 }
 
 func statusApi(w http.ResponseWriter, _ *http.Request) {
